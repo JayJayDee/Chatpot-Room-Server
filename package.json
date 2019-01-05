@@ -4,7 +4,7 @@
   "description": "chatpot room server for chatpot services",
   "main": "index.js",
   "scripts": {
-    "dev": "CONFIG_FILE=$HOME/chatpot-auth-conf.json TS_NODE_FILES=true nodemon --watch ./src -e ts --exec ts-node -- --project ./tsconfig.json ./src/app",
+    "dev": "CONFIG_FILE=$HOME/chatpot-room-conf.json TS_NODE_FILES=true nodemon --watch ./src -e ts --exec ts-node -- --project ./tsconfig.json ./src/app",
     "lint": "tslint -t stylish --project ./tsconfig.json",
     "test": "jest -c jest.config.js",
     "test:coverage": "jest -c jest.config.js --coverage",

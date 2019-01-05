@@ -1,8 +1,11 @@
-import { init } from 'smart-factory';
+import { init, resolve } from 'smart-factory';
+import { ConfigTypes, ConfigModules } from './config';
 
 (async () => {
   await init({
-    includes: [`${__dirname}/**/*.ts`, `${__dirname}/**/*.js`],
-    debug: true
+    includes: [`${__dirname}/**/*.ts`, `${__dirname}/**/*.js`]
   });
+
+  const httpCfg: ConfigTypes.HttpConfig = await resolve(ConfigModules.HttpConfig);
+  console.log(httpCfg);
 })();
