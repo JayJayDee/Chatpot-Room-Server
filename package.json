@@ -1,0 +1,43 @@
+{
+  "name": "chatpot-room-server",
+  "version": "1.0.0",
+  "description": "chatpot room server for chatpot services",
+  "main": "index.js",
+  "scripts": {
+    "dev": "CONFIG_FILE=$HOME/chatpot-auth-conf.json TS_NODE_FILES=true nodemon --watch ./src -e ts --exec ts-node -- --project ./tsconfig.json ./src/app",
+    "lint": "tslint -t stylish --project ./tsconfig.json",
+    "test": "jest -c jest.config.js",
+    "test:coverage": "jest -c jest.config.js --coverage",
+    "clean": "rimraf coverage dist",
+    "build": "npm run clean && npm run lint && npm run test && tsc -p ./tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JayJayDee/Chatpot-Room-Server.git"
+  },
+  "author": "JayJayDee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JayJayDee/Chatpot-Room-Server/issues"
+  },
+  "homepage": "https://github.com/JayJayDee/Chatpot-Room-Server#readme",
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.7",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^7.0.1",
+    "tslib": "^1.9.3",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
+    "mysql": "^2.16.0",
+    "smart-factory": "^1.0.11"
+  }
+}
