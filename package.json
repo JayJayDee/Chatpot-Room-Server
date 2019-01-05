@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/JayJayDee/Chatpot-Room-Server#readme",
   "devDependencies": {
+    "@types/lodash": "^4.14.119",
     "@types/node": "^10.12.18",
     "jest": "^23.6.0",
     "nodemon": "^1.18.7",
