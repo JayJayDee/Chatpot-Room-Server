@@ -1,12 +1,12 @@
 import { init, resolve } from 'smart-factory';
-import { MysqlTypes, MysqlModules } from './mysql';
+import { EndpointTypes, EndpointModules } from './endpoints';
 
 (async () => {
   await init({
     includes: [`${__dirname}/**/*.ts`, `${__dirname}/**/*.js`]
   });
 
-  const mysql: MysqlTypes.MysqlDriver =
-    await resolve(MysqlModules.Mysql);
-  console.log(mysql);
+  const runner: EndpointTypes.EndpointRunner =
+    await resolve(EndpointModules.EndpointRunner);
+  runner();
 })();
