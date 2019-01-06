@@ -6,19 +6,24 @@ import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
 import { ConfigModules, ConfigTypes } from '../configs';
 import { LoggerModules, LoggerTypes } from '../loggers';
+import { MiddlewareModules, MiddlewareTypes } from '../middlewares';
 
 injectable(EndpointModules.EndpointRunner,
   [ConfigModules.HttpConfig,
     LoggerModules.Logger,
-    EndpointModules.Endpoints],
+    EndpointModules.Endpoints,
+    MiddlewareModules.NotFound],
 
   async (cfg: ConfigTypes.HttpConfig,
     log: LoggerTypes.Logger,
-    endpoints: EndpointTypes.Endpoint[]): Promise<EndpointTypes.EndpointRunner> =>
+    endpoints: EndpointTypes.Endpoint[],
+    notFound: MiddlewareTypes.NotFound): Promise<EndpointTypes.EndpointRunner> =>
 
     () => {
       const app = express();
       registerEndpoints(app, endpoints, log);
+      app.use(notFound);
+
       app.listen(cfg.port, () => {
         log.info(`[http] http server stared with port: ${cfg.port}`);
       });
