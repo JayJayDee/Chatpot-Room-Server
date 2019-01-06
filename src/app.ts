@@ -1,5 +1,5 @@
 import { init, resolve } from 'smart-factory';
-import { ConfigTypes, ConfigModules } from './config';
+import { ConfigTypes, ConfigModules } from './configs';
 
 (async () => {
   await init({
