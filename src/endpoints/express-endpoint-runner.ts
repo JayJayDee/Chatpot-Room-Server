@@ -29,6 +29,11 @@ const registerEndpoints =
     endpoints: EndpointTypes.Endpoint[],
     log: LoggerTypes.Logger) => {
     endpoints.map((e) => {
+      if (e.method === EndpointTypes.EndpointMethod.GET) {
+        app.get(e.uri, e.handler);
+      } else if (e.method === EndpointTypes.EndpointMethod.POST) {
+        app.post(e.uri, e.handler);
+      }
       log.info(`[http] endpoint registered: ${e.method} ${e.uri}`);
     });
   };
