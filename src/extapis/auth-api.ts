@@ -10,6 +10,12 @@ injectable(ExtApiModules.AuthReq.MembersByTokens,
     request: ExtApiTypes.Request): Promise<ExtApiTypes.AuthReq.MembersByTokens> =>
 
       async (tokens: string[]) => {
+        const apiResp = await request({
+          uri: `${cfg.authBaseUri}/internal/members`,
+          method: ExtApiTypes.RequestMethod.GET,
+          qs: { tokens }
+        });
+        console.log(apiResp);
         return [];
       });
 
