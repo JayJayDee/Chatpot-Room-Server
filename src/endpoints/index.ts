@@ -8,8 +8,12 @@ export { EndpointModules } from './modules';
 // register endpoints to container.
 injectable(EndpointModules.Endpoints,
   [EndpointModules.Room.Create,
-    EndpointModules.Room.List],
+    EndpointModules.Room.List,
+    EndpointModules.Room.Join,
+    EndpointModules.Room.Leave],
   async (create: EndpointTypes.Endpoint,
-    list: EndpointTypes.Endpoint) => ([
-      create, list
+    list: EndpointTypes.Endpoint,
+    join: EndpointTypes.Endpoint,
+    leave: EndpointTypes.Endpoint) => ([
+      create, list, join, leave
     ]));
