@@ -13,16 +13,19 @@ injectable(EndpointModules.EndpointRunner,
   [ConfigModules.HttpConfig,
     LoggerModules.Logger,
     EndpointModules.Endpoints,
+    MiddlewareModules.Error,
     MiddlewareModules.NotFound],
 
   async (cfg: ConfigTypes.HttpConfig,
     log: LoggerTypes.Logger,
     endpoints: EndpointTypes.Endpoint[],
+    error: MiddlewareTypes.Error,
     notFound: MiddlewareTypes.NotFound): Promise<EndpointTypes.EndpointRunner> =>
 
     () => {
       const app = express();
       registerEndpoints(app, endpoints, log);
+      app.use(error);
       app.use(notFound);
 
       app.listen(cfg.port, () => {
