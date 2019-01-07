@@ -24,6 +24,9 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
   cache: {
     enabled: null,
     provider: null
+  },
+  extapi: {
+    authBaseUri: null
   }
 }));
 
@@ -44,6 +47,7 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'CACHE_REDIS_HOST', path: ['cache', 'redis', 'host'], defaultValue: null},
     { key: 'CACHE_REDIS_PORT', path: ['cache', 'redis', 'port'], defaultValue: null},
     { key: 'CACHE_REDIS_PASSWORD', path: ['cache', 'redis', 'password'], defaultValue: null},
+    { key: 'EXTAPI_AUTH_URI', path: ['extapi', 'authBaseUri'] }
   ]));
 
 injectable(ConfigModules.ConfigSource,
@@ -73,6 +77,10 @@ injectable(ConfigModules.CredentialConfig,
 injectable(ConfigModules.CacheConfig,
   [ConfigModules.RootConfig],
   async (root: ConfigTypes.RootConfig) => root.cache);
+
+injectable(ConfigModules.ExternalApiConfig,
+  [ConfigModules.RootConfig],
+  async (root: ConfigTypes.RootConfig) => root.extapi);
 
 injectable(ConfigModules.Env,
   [ConfigModules.ConfigSource],

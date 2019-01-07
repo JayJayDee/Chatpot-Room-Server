@@ -4,6 +4,7 @@ export namespace ConfigTypes {
     mysql: MysqlConfig;
     cache: CacheConfig;
     credential: CredentialConfig;
+    extapi: ExternalApiConfig;
   };
   export type HttpConfig = {
     port: number;
@@ -29,6 +30,9 @@ export namespace ConfigTypes {
     host: string;
     port: number;
     password?: string;
+  };
+  export type ExternalApiConfig = {
+    authBaseUri: string;
   };
   export enum CacheProvider {
     MEMORY = 'MEMORY', REDIS = 'REDIS'

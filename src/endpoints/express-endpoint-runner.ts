@@ -8,6 +8,7 @@ import { ConfigModules, ConfigTypes } from '../configs';
 import { LoggerModules, LoggerTypes } from '../loggers';
 
 injectable(EndpointModules.EndpointRunner,
+
   [ConfigModules.HttpConfig,
     LoggerModules.Logger,
     EndpointModules.Endpoints],
