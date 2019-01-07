@@ -1,23 +1,24 @@
 import { injectable } from 'smart-factory';
-import { ExternalModules } from './modules';
+import { ExtApiModules } from './modules';
 import { ConfigModules, ConfigTypes } from '../configs';
-import { ExternalTypes } from './types';
+import { ExtApiTypes } from './types';
 
-injectable(ExternalModules.AuthApi.MembersByTokens,
+injectable(ExtApiModules.AuthReq.MembersByTokens,
   [ ConfigModules.ExternalApiConfig ],
 
   async (cfg: ConfigTypes.ExternalApiConfig
-    ): Promise<ExternalTypes.AuthApi.MembersByTokens> =>
+    ): Promise<ExtApiTypes.AuthReq.MembersByTokens> =>
 
     async (tokens: string[]) => {
       return [];
     });
 
-injectable(ExternalModules.AuthApi.MembersByNos,
+
+injectable(ExtApiModules.AuthReq.MembersByNos,
   [ ConfigModules.ExternalApiConfig ],
 
   async (cfg: ConfigTypes.ExternalApiConfig
-    ): Promise<ExternalTypes.AuthApi.MembersByNos> =>
+    ): Promise<ExtApiTypes.AuthReq.MembersByNos> =>
 
     async (memberNos: number[]) => {
       return [];

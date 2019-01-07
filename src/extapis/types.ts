@@ -1,4 +1,4 @@
-export namespace ExternalTypes {
+export namespace ExtApiTypes {
   export type Member = {
     token: string;
     region: string;
@@ -12,7 +12,7 @@ export namespace ExternalTypes {
     ja: string;
   };
 
-  export namespace AuthApi {
+  export namespace AuthReq {
     export type MembersByTokens = (tokens: string[]) => Promise<Member[]>;
     export type MembersByNos = (memberNos: number[]) => Promise<Member[]>;
   }
