@@ -1,13 +1,13 @@
 import { injectable } from 'smart-factory';
 import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
-import { ExtApiModules } from '../extapis';
+import { ExtApiModules, ExtApiTypes } from '../extapis';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
     ExtApiModules.AuthReq.MembersByNos ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    getMembersByNos: ExtApiModules.AuthReq.MembersByNos): Promise<EndpointTypes.Endpoint> =>
+    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<EndpointTypes.Endpoint> =>
   ({
     uri: '/rooms',
     method: EndpointTypes.EndpointMethod.GET,
@@ -19,8 +19,7 @@ injectable(EndpointModules.Room.List,
   }));
 
 injectable(EndpointModules.Room.Create,
-  [ EndpointModules.Utils.WrapAync,
-    ExtApiModules.AuthReq.MembersByNos ],
+  [ EndpointModules.Utils.WrapAync ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync): Promise<EndpointTypes.Endpoint> => ({
     uri: '/room',
     method: EndpointTypes.EndpointMethod.POST,
