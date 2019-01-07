@@ -15,4 +15,8 @@ export namespace EndpointTypes {
   };
   export type Authenticator = (tokenPath: string[]) => RequestHandler;
   export type EndpointRunner = () => void;
+
+  export namespace Utils {
+    export type WrapAsync = (handler: RequestHandler) => RequestHandler;
+  }
 }
