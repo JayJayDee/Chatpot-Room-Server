@@ -25,7 +25,6 @@ export namespace ExtApiTypes {
   };
 
   export namespace AuthReq {
-    export type MembersByTokens = (tokens: string[]) => Promise<Member[]>;
     export type MembersByNos = (memberNos: number[]) => Promise<Member[]>;
   }
 }

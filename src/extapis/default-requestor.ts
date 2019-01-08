@@ -10,7 +10,8 @@ const requestor =
         method: param.method,
         body: param.body,
         qs: param.qs,
-        headers: param.headers
+        headers: param.headers,
+        json: true
       });
     };
 export default requestor;

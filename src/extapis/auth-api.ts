@@ -3,23 +3,6 @@ import { ExtApiModules } from './modules';
 import { ConfigModules, ConfigTypes } from '../configs';
 import { ExtApiTypes } from './types';
 
-injectable(ExtApiModules.AuthReq.MembersByTokens,
-  [ ConfigModules.ExternalApiConfig,
-    ExtApiModules.Requestor ],
-  async (cfg: ConfigTypes.ExternalApiConfig,
-    request: ExtApiTypes.Request): Promise<ExtApiTypes.AuthReq.MembersByTokens> =>
-
-      async (tokens: string[]) => {
-        const apiResp = await request({
-          uri: `${cfg.authBaseUri}/internal/members`,
-          method: ExtApiTypes.RequestMethod.GET,
-          qs: { tokens }
-        });
-        console.log(apiResp);
-        return [];
-      });
-
-
 injectable(ExtApiModules.AuthReq.MembersByNos,
   [ ConfigModules.ExternalApiConfig,
     ExtApiModules.Requestor ],
@@ -27,5 +10,17 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
     request: ExtApiTypes.Request): Promise<ExtApiTypes.AuthReq.MembersByNos> =>
 
     async (memberNos: number[]) => {
-      return [];
+      const apiResp: any[] = await request({
+        uri: `${cfg.authBaseUri}/internal/member`,
+        method: ExtApiTypes.RequestMethod.GET,
+        qs: { member_nos: memberNos }
+      });
+      const members: ExtApiTypes.Member[] = apiResp.map((elem) => ({
+        token: elem.token, // TODO: must be changed to member_no
+        region: elem.region,
+        language: elem.language,
+        gender: elem.gender,
+        nick: elem.nick
+      }));
+      return members;
     });

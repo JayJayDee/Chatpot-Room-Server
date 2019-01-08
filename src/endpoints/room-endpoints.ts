@@ -13,7 +13,8 @@ injectable(EndpointModules.Room.List,
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
       wrapAsync(async (req, res, next) => {
-        await getMembersByNos([32, 33]);
+        const members = await getMembersByNos([32, 33]);
+        console.log('members from api: ', members);
         res.status(200).json({});
       })
     ]
