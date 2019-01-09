@@ -14,15 +14,21 @@ export namespace ModelTypes {
     join_date: Date;
   };
 
-  export type RoomSearchQuery = {
-    offset: number;
+  export type RoomListEntity = {
+    all: number;
     size: number;
-    keyword: string;
-    region: string;
+    list: RoomEntity[];
+  };
+
+  export type RoomSearchQuery = {
+    offset?: number;
+    size?: number;
+    keyword?: string;
+    region?: string;
   };
 
   export namespace Room {
-    export type List = (query: RoomSearchQuery) => Promise<RoomEntity[]>;
+    export type List = (query: RoomSearchQuery) => Promise<RoomListEntity>;
     export type Get = (roomNo: number) => Promise<RoomEntity>;
   }
 }

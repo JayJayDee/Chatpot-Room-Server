@@ -2,12 +2,15 @@ import { injectable } from 'smart-factory';
 import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
 import { ExtApiModules, ExtApiTypes } from '../extapis';
+import { ModelModules, ModelTypes } from '../models';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
-    ExtApiModules.AuthReq.MembersByNos ],
+    ExtApiModules.AuthReq.MembersByNos,
+    ModelModules.Room.List ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<EndpointTypes.Endpoint> =>
+    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos,
+    getRooms: ModelTypes.Room.List): Promise<EndpointTypes.Endpoint> =>
   ({
     uri: '/rooms',
     method: EndpointTypes.EndpointMethod.GET,
@@ -15,6 +18,8 @@ injectable(EndpointModules.Room.List,
       wrapAsync(async (req, res, next) => {
         const members = await getMembersByNos([32, 33]);
         console.log('members from api: ', members);
+        const rooms = await getRooms({});
+        console.log('rooms = ', rooms);
         res.status(200).json({});
       })
     ]
