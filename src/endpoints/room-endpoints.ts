@@ -16,9 +16,10 @@ injectable(EndpointModules.Room.List,
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
       wrapAsync(async (req, res, next) => {
-        const members = await getMembersByNos([32, 33]);
-        console.log('members from api: ', members);
         const rooms = await getRooms({});
+        const memberNos = rooms.list.map((r) => r.owner_no);
+        const members = await getMembersByNos(memberNos);
+        console.log('members from api: ', members);
         console.log('rooms = ', rooms);
         res.status(200).json({});
       })

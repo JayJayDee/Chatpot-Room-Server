@@ -12,9 +12,13 @@ injectable(ModelModules.Room.List,
 
       const query = `
         SELECT
-          *
+          r.*,
+          rhm.member_no AS owner_no
         FROM
-          chatpot_room
+          chatpot_room AS r
+        INNER JOIN
+          chatpot_room_has_member AS rhm ON
+            rhm.room_no=r.no AND rhm.is_owner=1
         LIMIT
           ?,?
       `;
@@ -22,6 +26,7 @@ injectable(ModelModules.Room.List,
       const rows: any[] = await mysql.query(query, params) as any[];
       const rooms: ModelTypes.RoomEntity[] = rows.map((r) => ({
         no: r.no,
+        owner_no: r.owner_no,
         title: r.title,
         num_attendee: r.num_attendee,
         max_attendee: r.max_attendee,

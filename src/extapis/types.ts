@@ -12,7 +12,7 @@ export namespace ExtApiTypes {
   export type Request = (param: RequestParam) => Promise<any>;
 
   export type Member = {
-    token: string;
+    member_no: number;
     region: string;
     language: string;
     gender: string;

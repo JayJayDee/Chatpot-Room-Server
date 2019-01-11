@@ -1,6 +1,7 @@
 export namespace ModelTypes {
   export type RoomEntity = {
     no: number;
+    owner_no: number;
     title: string;
     num_attendee: number;
     max_attendee: number;
