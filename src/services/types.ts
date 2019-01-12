@@ -19,6 +19,7 @@ export namespace ServiceTypes {
   export type ReqRoomCreate = {
     owner_no: number;
     title: string;
+    max_attendee: number;
   };
   export type ResRoomCreate = {
     room_token: string;

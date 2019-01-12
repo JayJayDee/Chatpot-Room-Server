@@ -35,9 +35,13 @@ injectable(ServiceModules.Room.List,
 
 
 injectable(ServiceModules.Room.Create,
-  [],
-  async (): Promise<ServiceTypes.RoomService.Create> =>
+  [ ModelModules.Room.Create,
+    ModelModules.Room.UpdateToken ],
+  async (create: ModelTypes.Room.Create,
+    updateToken: ModelTypes.Room.UpdateToken): Promise<ServiceTypes.RoomService.Create> =>
 
-    async () => {
+    async (param) => {
+      const createdRoomNo = await create(param);
+      console.log(createdRoomNo);
       return null;
     });
