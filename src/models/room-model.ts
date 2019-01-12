@@ -26,6 +26,7 @@ injectable(ModelModules.Room.List,
       const rows: any[] = await mysql.query(query, params) as any[];
       const rooms: ModelTypes.RoomEntity[] = rows.map((r) => ({
         no: r.no,
+        token: r.token,
         owner_no: r.owner_no,
         title: r.title,
         num_attendee: r.num_attendee,
