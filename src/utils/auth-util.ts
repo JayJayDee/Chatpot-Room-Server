@@ -16,15 +16,37 @@ injectable(UtilModules.Auth.CreateMemberToken,
   [ ConfigModules.CredentialConfig ],
   async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.CreateMemberToken> =>
     (memberNo: number) => {
-      return null;
+      const cp = cipher(cfg);
+      let encrypted: string = '';
+      encrypted += cp.update(`${memberNo}|@|${Date.now()}`, 'utf8', 'hex');
+      encrypted += cp.final('hex');
+      return encrypted;
     });
 
 injectable(UtilModules.Auth.DecryptMemberToken,
-  [ ConfigModules.CredentialConfig ],
-  async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.DecryptMemberToken> =>
-    (memberToken: string) => {
-      return null;
-    });
+  [ ConfigModules.CredentialConfig,
+    LoggerModules.Logger ],
+  async (cfg: ConfigTypes.CredentialConfig,
+    log: LoggerTypes.Logger): Promise<UtilTypes.Auth.DecryptMemberToken> =>
+      (memberToken: string) => {
+        const dp = decipher(cfg);
+          try {
+            let decrypted: string = dp.update(memberToken, 'hex', 'utf8');
+            decrypted += dp.final('utf8');
+            const splited: string[] = decrypted.split('|@|');
+            if (splited.length !== 2) {
+              log.error(`[authutil] invalid token, decryption successful, but invalid expression: ${memberToken}`);
+              return null;
+            }
+            return {
+              member_no: parseInt(splited[0]),
+              timestamp: parseInt(splited[1])
+            };
+          } catch (err) {
+            log.error(`[authutil] invalid token, decryption failure: ${memberToken}`);
+            return null;
+          }
+      });
 
 injectable(UtilModules.Auth.CrateRoomToken,
   [ ConfigModules.CredentialConfig ],
