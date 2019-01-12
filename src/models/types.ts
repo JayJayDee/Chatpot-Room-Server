@@ -28,9 +28,16 @@ export namespace ModelTypes {
     keyword?: string;
     region?: string;
   };
+  export type RoomCreateParam = {
+    title: string;
+    owner_no: number;
+    max_attendee: number;
+  };
 
   export namespace Room {
     export type List = (query: RoomSearchQuery) => Promise<RoomListEntity>;
     export type Get = (roomNo: number) => Promise<RoomEntity>;
+    export type Create = (param: RoomCreateParam) => Promise<number>;
+    export type UpdateToken = (roomNo: number, token: string) => Promise<void>;
   }
 }

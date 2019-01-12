@@ -16,7 +16,16 @@ export namespace ServiceTypes {
     list: Room[];
   };
 
+  export type ReqRoomCreate = {
+    owner_no: number;
+    title: string;
+  };
+  export type ResRoomCreate = {
+    room_token: string;
+  };
+
   export namespace RoomService {
     export type List = (query: ModelTypes.RoomSearchQuery) => Promise<RoomList>;
+    export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
   }
 }

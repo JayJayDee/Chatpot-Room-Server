@@ -46,3 +46,17 @@ injectable(ModelModules.Room.Get,
     async (roomNo: number) => {
       return null;
     });
+
+injectable(ModelModules.Room.Create,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.Create> =>
+    async (param) => {
+      return 1;
+    });
+
+injectable(ModelModules.Room.UpdateToken,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.UpdateToken> =>
+    async (roomNo: number, token: string) => {
+
+    });

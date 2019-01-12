@@ -32,3 +32,12 @@ injectable(ServiceModules.Room.List,
         list: rooms
       };
     });
+
+
+injectable(ServiceModules.Room.Create,
+  [],
+  async (): Promise<ServiceTypes.RoomService.Create> =>
+
+    async () => {
+      return null;
+    });
