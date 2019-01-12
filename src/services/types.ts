@@ -2,9 +2,16 @@ import { ExtApiTypes } from '../extapis';
 import { ModelTypes } from '../models';
 
 export namespace ServiceTypes {
+  export type Member = {
+    member_token: string;
+    region: string;
+    language: string;
+    gender: string;
+    nick: ExtApiTypes.Nick;
+  };
   export type Room = {
     room_token: string;
-    owner: ExtApiTypes.Member;
+    owner: Member;
     title: string;
     num_attendee: number;
     max_attendee: number;

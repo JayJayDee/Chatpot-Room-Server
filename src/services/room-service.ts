@@ -5,21 +5,35 @@ import { ServiceModules } from './modules';
 import { ServiceTypes } from './types';
 import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
+import { UtilModules } from '../utils/modules';
+import { UtilTypes } from '../utils/types';
+
+const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
+  (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
+    member_token: encrypt(fromMember.member_no),
+    region: fromMember.region,
+    language: fromMember.language,
+    gender: fromMember.gender,
+    nick: fromMember.nick
+  });
 
 injectable(ServiceModules.Room.List,
   [ ExtApiModules.AuthReq.MembersByNos,
-    ModelModules.Room.List ],
+    ModelModules.Room.List,
+    UtilModules.Auth.CreateMemberToken ],
   async (requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos,
-    getRooms: ModelTypes.Room.List): Promise<ServiceTypes.RoomService.List> =>
+    getRooms: ModelTypes.Room.List,
+    encrypt: UtilTypes.Auth.CreateMemberToken): Promise<ServiceTypes.RoomService.List> =>
 
     async (param) => {
+      const convert = cvtMember(encrypt);
       const roomResp = await getRooms(param);
       const memberNos: number[] = roomResp.list.map((r) => r.owner_no);
       const members = await requestMembersViaApi(memberNos);
 
       const rooms: ServiceTypes.Room[] = roomResp.list.map((r) => ({
         room_token: r.token,
-        owner: find(members, {member_no: r.owner_no}),
+        owner: convert(find(members, {member_no: r.owner_no})),
         title: r.title,
         num_attendee: r.num_attendee,
         max_attendee: r.max_attendee,
