@@ -51,6 +51,18 @@ injectable(ModelModules.Room.Create,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.Create> =>
     async (param) => {
+      const sql = `
+        INSERT INTO
+          chatpot_room
+        SET
+          title=?,
+          num_attendee=0,
+          max_attendee=?,
+          reg_date=NOW()
+      `;
+      const params: any[] = [ param.title, param.max_attendee ];
+      const resp: any = await mysql.query(sql, params);
+      console.log(resp);
       return 1;
     });
 
@@ -58,5 +70,15 @@ injectable(ModelModules.Room.UpdateToken,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.UpdateToken> =>
     async (roomNo: number, token: string) => {
-
+      const sql = `
+        UPDATE
+          chatpot_room
+        SET
+          token=?,
+        WHERE
+          no=?
+      `;
+      const params: any[] = [ token, roomNo ];
+      const resp: any = await mysql.query(sql, params);
+      console.log(resp);
     });
