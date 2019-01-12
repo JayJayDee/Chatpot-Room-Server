@@ -12,6 +12,20 @@ const cipher = (cfg: ConfigTypes.CredentialConfig) =>
 const decipher = (cfg: ConfigTypes.CredentialConfig) =>
   createDecipher('des-ede3-cbc', cfg.secret);
 
+injectable(UtilModules.Auth.CreateMemberToken,
+  [ ConfigModules.CredentialConfig ],
+  async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.CreateMemberToken> =>
+    (memberNo: number) => {
+      return null;
+    });
+
+injectable(UtilModules.Auth.DecryptMemberToken,
+  [ ConfigModules.CredentialConfig ],
+  async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.DecryptMemberToken> =>
+    (memberToken: string) => {
+      return null;
+    });
+
 injectable(UtilModules.Auth.CrateRoomToken,
   [ ConfigModules.CredentialConfig ],
   async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.CreateRoomToken> =>
