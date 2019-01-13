@@ -33,7 +33,7 @@ export namespace ServiceTypes {
   };
 
   export namespace RoomService {
-    export type List = (query: ModelTypes.RoomSearchQuery) => Promise<RoomList>;
+    export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
   }
 }

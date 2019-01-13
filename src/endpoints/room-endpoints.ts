@@ -2,6 +2,7 @@ import { injectable } from 'smart-factory';
 import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
 import { ServiceModules, ServiceTypes } from '../services';
+import { InvalidParamError } from '../errors';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
@@ -28,12 +29,13 @@ injectable(EndpointModules.Room.Create,
     method: EndpointTypes.EndpointMethod.POST,
     handler: [
       wrapAsync(async (req, res, next) => {
+        console.log(req.body);
         const memberToken: string = req.body.member_token;
         const maxAttendee: string = req.body.max_attendee;
         const title: string = req.body.title;
 
         if (!memberToken || !maxAttendee || !title) {
-          // TODO: throw invalidParamException
+          throw new InvalidParamError('member_token, max_attendee, title required');
         }
 
         const resp = await create({

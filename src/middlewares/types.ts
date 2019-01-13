@@ -1,6 +1,6 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, ErrorRequestHandler } from 'express';
 
 export namespace MiddlewareTypes {
   export type NotFound = RequestHandler;
-  export type Error = RequestHandler;
+  export type Error = ErrorRequestHandler;
 }
