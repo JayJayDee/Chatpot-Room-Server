@@ -29,7 +29,6 @@ injectable(EndpointModules.Room.Create,
     method: EndpointTypes.EndpointMethod.POST,
     handler: [
       wrapAsync(async (req, res, next) => {
-        console.log(req.body);
         const memberToken: string = req.body.member_token;
         const maxAttendee: string = req.body.max_attendee;
         const title: string = req.body.title;

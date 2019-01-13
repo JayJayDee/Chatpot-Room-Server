@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/JayJayDee/Chatpot-Room-Server#readme",
   "devDependencies": {
+    "@types/body-parser": "^1.17.0",
     "@types/express": "^4.16.0",
     "@types/lodash": "^4.14.119",
     "@types/mysql": "^2.15.5",

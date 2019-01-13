@@ -1,4 +1,5 @@
 import { injectable } from 'smart-factory';
+import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import { Application } from 'express';
 
@@ -24,6 +25,7 @@ injectable(EndpointModules.EndpointRunner,
 
     () => {
       const app = express();
+      app.use(bodyParser.urlencoded({ extended: true }));
       registerEndpoints(app, endpoints, log);
       app.use(error);
       app.use(notFound);
