@@ -6,17 +6,17 @@ import { UtilTypes } from './types';
 import { ConfigModules, ConfigTypes } from '../configs';
 import { LoggerModules, LoggerTypes } from '../loggers';
 
-const cipher = (cfg: ConfigTypes.CredentialConfig) =>
-  createCipher('des-ede3-cbc', cfg.secret);
+const cipher = (secret: string) =>
+  createCipher('des-ede3-cbc', secret);
 
-const decipher = (cfg: ConfigTypes.CredentialConfig) =>
-  createDecipher('des-ede3-cbc', cfg.secret);
+const decipher = (secret: string) =>
+  createDecipher('des-ede3-cbc', secret);
 
 injectable(UtilModules.Auth.CreateMemberToken,
   [ ConfigModules.CredentialConfig ],
   async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.CreateMemberToken> =>
     (memberNo: number) => {
-      const cp = cipher(cfg);
+      const cp = cipher(cfg.authSecret);
       let encrypted: string = '';
       encrypted += cp.update(`${memberNo}|@|${Date.now()}`, 'utf8', 'hex');
       encrypted += cp.final('hex');
@@ -29,7 +29,7 @@ injectable(UtilModules.Auth.DecryptMemberToken,
   async (cfg: ConfigTypes.CredentialConfig,
     log: LoggerTypes.Logger): Promise<UtilTypes.Auth.DecryptMemberToken> =>
       (memberToken: string) => {
-        const dp = decipher(cfg);
+        const dp = decipher(cfg.authSecret);
           try {
             let decrypted: string = dp.update(memberToken, 'hex', 'utf8');
             decrypted += dp.final('utf8');
@@ -52,7 +52,7 @@ injectable(UtilModules.Auth.CrateRoomToken,
   [ ConfigModules.CredentialConfig ],
   async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.CreateRoomToken> =>
     (roomNo: number) => {
-      const cp = cipher(cfg);
+      const cp = cipher(cfg.roomSecret);
       let encrypted: string = '';
       encrypted += cp.update(`${roomNo}|@|${Date.now()}`, 'utf8', 'hex');
       encrypted += cp.final('hex');
@@ -65,7 +65,7 @@ injectable(UtilModules.Auth.DecryptRoomToken,
   async (log: LoggerTypes.Logger,
     cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.DecryptRoomToken> =>
       (roomToken: string) => {
-        const dp = decipher(cfg);
+        const dp = decipher(cfg.roomSecret);
         try {
           let decrypted: string = dp.update(roomToken, 'hex', 'utf8');
           decrypted += dp.final('utf8');

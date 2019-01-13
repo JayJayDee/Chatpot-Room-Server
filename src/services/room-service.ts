@@ -50,12 +50,16 @@ injectable(ServiceModules.Room.List,
 
 injectable(ServiceModules.Room.Create,
   [ ModelModules.Room.Create,
-    ModelModules.Room.UpdateToken ],
+    ModelModules.Room.UpdateToken,
+    UtilModules.Auth.CrateRoomToken ],
   async (create: ModelTypes.Room.Create,
-    updateToken: ModelTypes.Room.UpdateToken): Promise<ServiceTypes.RoomService.Create> =>
+    updateToken: ModelTypes.Room.UpdateToken,
+    createRoomToken: UtilTypes.Auth.CreateRoomToken): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
       const createdRoomNo = await create(param);
-      console.log(createdRoomNo);
+      const token = createRoomToken(createdRoomNo);
+      await updateToken(createdRoomNo, token);
+      // TODO: transactions between queires required.
       return null;
     });

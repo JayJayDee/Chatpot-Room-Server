@@ -62,8 +62,8 @@ injectable(ModelModules.Room.Create,
       `;
       const params: any[] = [ param.title, param.max_attendee ];
       const resp: any = await mysql.query(sql, params);
-      console.log(resp);
-      return 1;
+      if (resp.affectedRows !== 1) return null;
+      return resp.insertId;
     });
 
 injectable(ModelModules.Room.UpdateToken,
@@ -74,7 +74,7 @@ injectable(ModelModules.Room.UpdateToken,
         UPDATE
           chatpot_room
         SET
-          token=?,
+          token=?
         WHERE
           no=?
       `;
