@@ -5,8 +5,7 @@ import { ServiceModules } from './modules';
 import { ServiceTypes } from './types';
 import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
-import { UtilModules } from '../utils/modules';
-import { UtilTypes } from '../utils/types';
+import { UtilModules, UtilTypes } from '../utils';
 
 const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
