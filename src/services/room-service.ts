@@ -60,6 +60,7 @@ injectable(ServiceModules.Room.Create,
       const createdRoomNo = await create(param);
       const token = createRoomToken(createdRoomNo);
       await updateToken(createdRoomNo, token);
-      // TODO: transactions between queires required.
-      return null;
+      return {
+        room_token: token
+      };
     });

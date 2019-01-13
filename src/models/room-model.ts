@@ -56,14 +56,26 @@ injectable(ModelModules.Room.Create,
           chatpot_room
         SET
           title=?,
-          num_attendee=0,
+          num_attendee=1,
           max_attendee=?,
           reg_date=NOW()
       `;
       const params: any[] = [ param.title, param.max_attendee ];
       const resp: any = await mysql.query(sql, params);
       if (resp.affectedRows !== 1) return null;
-      return resp.insertId;
+
+      const newRoomNo: number = resp.insertId;
+      const memberSql = `
+        INSERT INTO
+          chatpot_room_has_member
+        SET
+          room_no=?,
+          member_no=?,
+          is_owner=1,
+          join_date=NOW()
+      `;
+      await mysql.query(memberSql, [ newRoomNo, param.owner_no ]);
+      return newRoomNo;
     });
 
 injectable(ModelModules.Room.UpdateToken,
@@ -80,5 +92,7 @@ injectable(ModelModules.Room.UpdateToken,
       `;
       const params: any[] = [ token, roomNo ];
       const resp: any = await mysql.query(sql, params);
-      console.log(resp);
+      if (resp.affectedRows !== 1) {
+        // TODO: throw exception.
+      }
     });
