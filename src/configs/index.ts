@@ -18,8 +18,8 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
     connectionLimit: null
   },
   credential: {
-    sessionExpires: null,
-    secret: null
+    authSecret: null,
+    roomSecret: null
   },
   cache: {
     enabled: null,
@@ -40,8 +40,8 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'MYSQL_PASSWORD', path: ['mysql', 'password'] },
     { key: 'MYSQL_DATABASE', path: ['mysql', 'database'] },
     { key: 'MYSQL_CONNECTION_LIMIT', path: ['mysql', 'connectionLimit'], defaultValue: 10 },
-    { key: 'CREDENTIAL_SECRET', path: ['credential', 'secret'] },
-    { key: 'CREDENTIAL_SESSION_EXPIRES', path: ['credential', 'sessionExpires'], defaultValue: 60 },
+    { key: 'CREDENTIAL_AUTH_SECRET', path: ['credential', 'authSecret'] },
+    { key: 'CREDENTIAL_ROOM_SECRET', path: ['credential', 'roomSecret'] },
     { key: 'CACHE_ENABLED', path: ['cache', 'enabled'], defaultValue: false},
     { key: 'CACHE_PROVIDER', path: ['cache', 'provider'], defaultValue: 'MEMORY'},
     { key: 'CACHE_REDIS_HOST', path: ['cache', 'redis', 'host'], defaultValue: null},

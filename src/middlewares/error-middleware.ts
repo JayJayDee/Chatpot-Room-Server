@@ -2,12 +2,14 @@ import { injectable } from 'smart-factory';
 import { MiddlewareModules } from './modules';
 import { MiddlewareTypes } from './types';
 import { BaseLogicError } from '../errors';
+import { LoggerModules, LoggerTypes } from '../loggers';
 
 injectable(MiddlewareModules.Error,
-  [],
-  async (): Promise<MiddlewareTypes.Error> =>
+  [ LoggerModules.Logger ],
+  async (log: LoggerTypes.Logger): Promise<MiddlewareTypes.Error> =>
     (err, req, res, next) => {
       if (err) {
+        log.error(err);
         res.status(statusCode(err)).json({
           code: code(err),
           message: message(err)

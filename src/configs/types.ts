@@ -18,8 +18,8 @@ export namespace ConfigTypes {
     connectionLimit: number;
   };
   export type CredentialConfig = {
-    sessionExpires: number;
-    secret: string;
+    authSecret: string;
+    roomSecret: string;
   };
   export type CacheConfig = {
     enabled: boolean;

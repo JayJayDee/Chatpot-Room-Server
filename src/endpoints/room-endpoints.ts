@@ -3,6 +3,8 @@ import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
 import { ServiceModules, ServiceTypes } from '../services';
 import { InvalidParamError } from '../errors';
+import { UtilModules } from '../utils/modules';
+import { UtilTypes } from '../utils/types';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
@@ -22,9 +24,11 @@ injectable(EndpointModules.Room.List,
 
 injectable(EndpointModules.Room.Create,
   [ EndpointModules.Utils.WrapAync,
-    ServiceModules.Room.Create ],
+    ServiceModules.Room.Create,
+    UtilModules.Auth.DecryptMemberToken ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    create: ServiceTypes.RoomService.Create): Promise<EndpointTypes.Endpoint> => ({
+    create: ServiceTypes.RoomService.Create,
+    decrypt: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> => ({
     uri: '/room',
     method: EndpointTypes.EndpointMethod.POST,
     handler: [
@@ -33,14 +37,15 @@ injectable(EndpointModules.Room.Create,
         const maxAttendee: string = req.body.max_attendee;
         const title: string = req.body.title;
 
-        if (!memberToken || !maxAttendee || !title) {
+        if (!memberToken || !maxAttendee || !title)
           throw new InvalidParamError('member_token, max_attendee, title required');
-        }
+        if (decrypt(memberToken) === null)
+          throw new InvalidParamError('invalid member_token');
 
         const resp = await create({
           title,
-          owner_no: 1,
-          max_attendee: 10
+          owner_no: decrypt(memberToken).member_no,
+          max_attendee: parseInt(maxAttendee)
         });
         res.status(200).json(resp);
       })
