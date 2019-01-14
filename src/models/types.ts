@@ -44,4 +44,15 @@ export namespace ModelTypes {
     export type Create = (param: RoomCreateParam) => Promise<number>;
     export type UpdateToken = (roomNo: number, token: string) => Promise<void>;
   }
+
+
+  export type RoomMemberAddParam = {
+    room_no: number;
+    member_no: number;
+    is_owner: boolean;
+  };
+  export namespace RoomMember {
+    export type AddMember = (param: RoomMemberAddParam) => Promise<void>;
+    export type RemoveMember = (roomNo: number, memberNo: number) => Promise<void>;
+  }
 }
