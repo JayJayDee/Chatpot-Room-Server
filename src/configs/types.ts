@@ -18,6 +18,7 @@ export namespace ConfigTypes {
     connectionLimit: number;
   };
   export type CredentialConfig = {
+    sessionExpires: number;
     authSecret: string;
     roomSecret: string;
   };

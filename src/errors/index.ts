@@ -12,3 +12,9 @@ export class InvalidParamError extends BaseLogicError {
     super('INVALID_PARAM', paramExpr);
   }
 }
+
+export class BaseSecurityError extends Error {
+  constructor(msg: any) {
+    super(msg);
+  }
+}
