@@ -1,7 +1,7 @@
 import { injectable } from 'smart-factory';
 import { MiddlewareModules } from './modules';
 import { MiddlewareTypes } from './types';
-import { BaseLogicError } from '../errors';
+import { BaseLogicError, BaseSecurityError } from '../errors';
 import { LoggerModules, LoggerTypes } from '../loggers';
 
 injectable(MiddlewareModules.Error,
@@ -20,9 +20,11 @@ injectable(MiddlewareModules.Error,
     });
 
 const statusCode = (err: Error) =>
-  err instanceof BaseLogicError ? 400 : 500;
+  err instanceof BaseLogicError ? 400 :
+    err instanceof BaseSecurityError ? 401 : 500;
 
 const code = (err: Error) =>
-  err instanceof BaseLogicError ? err.code : 'UNEXPECTED_ERROR';
+  err instanceof BaseLogicError ? err.code :
+    err instanceof BaseSecurityError ? 'UNAUTHORIZED' : 'UNEXPECTED_ERROR';
 
 const message = (err: Error) => err.message;
