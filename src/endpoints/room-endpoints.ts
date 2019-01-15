@@ -5,16 +5,20 @@ import { ServiceModules, ServiceTypes } from '../services';
 import { InvalidParamError } from '../errors';
 import { UtilModules } from '../utils/modules';
 import { UtilTypes } from '../utils/types';
+import { MiddlewareModules, MiddlewareTypes } from '../middlewares';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
-    ServiceModules.Room.List ],
+    ServiceModules.Room.List,
+    MiddlewareModules.Authentication ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    queryRooms: ServiceTypes.RoomService.List): Promise<EndpointTypes.Endpoint> =>
+    queryRooms: ServiceTypes.RoomService.List,
+    authenticate: MiddlewareTypes.Authentication): Promise<EndpointTypes.Endpoint> =>
   ({
     uri: '/rooms',
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
+      authenticate,
       wrapAsync(async (req, res, next) => {
         const rooms = await queryRooms({});
         res.status(200).json(rooms);
