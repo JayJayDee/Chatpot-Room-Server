@@ -36,4 +36,8 @@ export namespace ServiceTypes {
     export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
   }
+
+  export namespace MyService {
+    export type Rooms = (memberNo: number) => Promise<Room[]>;
+  }
 }
