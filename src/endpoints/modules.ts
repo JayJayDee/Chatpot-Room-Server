@@ -11,4 +11,8 @@ export namespace EndpointModules {
     Join = 'Endpoint/Room/Join',
     Leave = 'Endpoint/Room/Leave'
   }
+
+  export enum My {
+    Rooms = 'Endpoint/My/Rooms'
+  }
 }
