@@ -3,4 +3,8 @@ export namespace ServiceModules {
     List = 'Service/Room/List',
     Create = 'Service/Room/Create'
   }
+
+  export enum My {
+    Rooms = 'Service/My/Rooms'
+  }
 }
