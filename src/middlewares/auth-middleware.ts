@@ -31,7 +31,7 @@ injectable(MiddlewareModules.Authorization,
     (memberTokenPath: string[]) =>
       (req, res, next) => {
         const sessionKey: string = req.query.session_key;
-        const memberToken: string = get(req.query, memberTokenPath);
+        const memberToken: string = get(req, memberTokenPath);
 
         if (!sessionKey) return next(new AuthorizationFailError('session_key not supplied'));
         if (!memberToken) return next(new AuthorizationFailError('member_token not supplied'));
