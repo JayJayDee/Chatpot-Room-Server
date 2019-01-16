@@ -3,6 +3,28 @@ import { ModelModules } from './modules';
 import { ModelTypes } from './types';
 import { MysqlModules, MysqlTypes } from '../mysql';
 
+injectable(ModelModules.RoomMember.MyRooms,
+  [ MysqlModules.Mysql,
+    ModelModules.Converter.Room ],
+  async (mysql: MysqlTypes.MysqlDriver,
+    cvtRoom: ModelTypes.Converter.Room): Promise<ModelTypes.RoomMember.MyRooms> =>
+      async (memberNo) => {
+        const sql = `
+          SELECT
+            r.*,
+            rhm.member_no AS owner_no
+          FROM
+            chatpot_room_has_member AS rhm
+          INNER JOIN
+            chatpot_room AS r ON r.no=rhm.room_no
+          WHERE
+            rhm.member_no=?
+        `;
+        const rows: any[] = await mysql.query(sql, [ memberNo ]) as any[];
+        const rooms: ModelTypes.RoomEntity[] = rows.map(cvtRoom);
+        return rooms;
+      });
+
 injectable(ModelModules.RoomMember.AddMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.AddMember> =>
