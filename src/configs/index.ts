@@ -18,6 +18,7 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
     connectionLimit: null
   },
   credential: {
+    authEnabled: null,
     sessionExpires: null,
     authSecret: null,
     roomSecret: null
@@ -41,6 +42,7 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'MYSQL_PASSWORD', path: ['mysql', 'password'] },
     { key: 'MYSQL_DATABASE', path: ['mysql', 'database'] },
     { key: 'MYSQL_CONNECTION_LIMIT', path: ['mysql', 'connectionLimit'], defaultValue: 10 },
+    { key: 'CREDENTIAL_AUTH_ENABLED', path: ['credential', 'authEnabled'], defaultValue: false },
     { key: 'CREDENTIAL_AUTH_SECRET', path: ['credential', 'authSecret'] },
     { key: 'CREDENTIAL_AUTH_SESSION_EXPIRES', path: ['credential', 'sessionExpires'], defaultValue: 60 },
     { key: 'CREDENTIAL_ROOM_SECRET', path: ['credential', 'roomSecret'] },
