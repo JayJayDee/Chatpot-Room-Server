@@ -6,6 +6,7 @@ import { ServiceTypes } from './types';
 import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
 import { UtilModules, UtilTypes } from '../utils';
+import { LoggerModules, LoggerTypes } from '../loggers';
 
 const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
@@ -46,19 +47,36 @@ injectable(ServiceModules.Room.List,
       };
     });
 
-
 injectable(ServiceModules.Room.Create,
-  [ ModelModules.Room.Create,
+  [ LoggerModules.Logger,
+    ModelModules.Room.Create,
     ModelModules.Room.UpdateToken,
+    ModelModules.RoomMember.AddMember,
     UtilModules.Auth.CrateRoomToken ],
-  async (create: ModelTypes.Room.Create,
+  async (log: LoggerTypes.Logger,
+    create: ModelTypes.Room.Create,
     updateToken: ModelTypes.Room.UpdateToken,
+    addMember: ModelTypes.RoomMember.AddMember,
     createRoomToken: UtilTypes.Auth.CreateRoomToken): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
       const createdRoomNo = await create(param);
       const token = createRoomToken(createdRoomNo);
+      log.debug(`[room-service] room:${createdRoomNo} created`);
+
       await updateToken(createdRoomNo, token);
+      log.debug(`[room-service] room:${createdRoomNo}, member-token:${token} updated`);
+
+      const addResp = await addMember({
+        room_no: createdRoomNo,
+        member_no: param.owner_no,
+        is_owner: true
+      });
+      if (addResp.success === true) {
+        log.debug(`[room-service] room:${createdRoomNo}, member:${param.owner_no} joined`);
+      } else {
+        log.error(`[room-service] room:${createdRoomNo}, member:${param.owner_no} join fail: ${addResp.cause}`);
+      }
       return {
         room_token: token
       };

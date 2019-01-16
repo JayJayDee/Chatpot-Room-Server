@@ -29,32 +29,35 @@ injectable(EndpointModules.Room.List,
 injectable(EndpointModules.Room.Create,
   [ EndpointModules.Utils.WrapAync,
     ServiceModules.Room.Create,
-    UtilModules.Auth.DecryptMemberToken ],
+    UtilModules.Auth.DecryptMemberToken,
+    MiddlewareModules.Authorization ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
     create: ServiceTypes.RoomService.Create,
-    decrypt: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> => ({
-    uri: '/room',
-    method: EndpointTypes.EndpointMethod.POST,
-    handler: [
-      wrapAsync(async (req, res, next) => {
-        const memberToken: string = req.body.member_token;
-        const maxAttendee: string = req.body.max_attendee;
-        const title: string = req.body.title;
+    decrypt: UtilTypes.Auth.DecryptMemberToken,
+    authorize: MiddlewareTypes.Authorization): Promise<EndpointTypes.Endpoint> => ({
+      uri: '/room',
+      method: EndpointTypes.EndpointMethod.POST,
+      handler: [
+        authorize(['body', 'member_token']),
+        wrapAsync(async (req, res, next) => {
+          const memberToken: string = req.body.member_token;
+          const maxAttendee: string = req.body.max_attendee;
+          const title: string = req.body.title;
 
-        if (!memberToken || !maxAttendee || !title)
-          throw new InvalidParamError('member_token, max_attendee, title required');
-        if (decrypt(memberToken) === null)
-          throw new InvalidParamError('invalid member_token');
+          if (!memberToken || !maxAttendee || !title)
+            throw new InvalidParamError('member_token, max_attendee, title required');
+          if (decrypt(memberToken) === null)
+            throw new InvalidParamError('invalid member_token');
 
-        const resp = await create({
-          title,
-          owner_no: decrypt(memberToken).member_no,
-          max_attendee: parseInt(maxAttendee)
-        });
-        res.status(200).json(resp);
-      })
-    ]
-  }));
+          const resp = await create({
+            title,
+            owner_no: decrypt(memberToken).member_no,
+            max_attendee: parseInt(maxAttendee)
+          });
+          res.status(200).json(resp);
+        })
+      ]
+    }));
 
 injectable(EndpointModules.Room.Join,
   [ EndpointModules.Utils.WrapAync ],

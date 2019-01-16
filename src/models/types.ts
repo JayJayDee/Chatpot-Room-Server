@@ -51,8 +51,12 @@ export namespace ModelTypes {
     member_no: number;
     is_owner: boolean;
   };
+  export type RoomMemberAddRes = {
+    success: boolean;
+    cause: string | null;
+  };
   export namespace RoomMember {
-    export type AddMember = (param: RoomMemberAddParam) => Promise<void>;
+    export type AddMember = (param: RoomMemberAddParam) => Promise<RoomMemberAddRes>;
     export type RemoveMember = (roomNo: number, memberNo: number) => Promise<void>;
   }
 }

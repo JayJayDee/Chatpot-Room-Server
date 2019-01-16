@@ -7,17 +7,44 @@ injectable(ModelModules.RoomMember.AddMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.AddMember> =>
     async (param) => {
+      const resp: ModelTypes.RoomMemberAddRes = {
+        success: false,
+        cause: null
+      };
+      const isOwner: number = param.is_owner === true ? 1 : 0;
       const sql = `
         INSERT INTO chatpot_room_has_member
           (room_no, member_no, is_owner, join_date)
         SELECT
           ?, ?, ?, NOW()
         WHERE
-          SELECT COUNT(no) FROM chatpot_room_has_member WHERE room_no=?
+          (SELECT COUNT(no) FROM
+            chatpot_room_has_member
+              WHERE room_no=? AND member_no=?) = 0
       `;
-      const params = [ param.room_no, param.member_no, param.is_owner, param.room_no ];
-      const resp: any = await mysql.query(sql, params);
-      console.log(resp);
+      const params = [ param.room_no, param.member_no, isOwner,
+        param.room_no, param.member_no ];
+      await mysql.query(sql, params);
+
+      const inspectSql = `
+        SELECT
+          *
+        FROM
+          chatpot_room_has_member
+        WHERE
+          room_no=? AND member_no=? AND is_owner=?
+      `;
+      const rows: any[] = await mysql.query(inspectSql, [
+        param.room_no, param.member_no, isOwner
+      ]) as any[];
+
+      if (rows.length === 0) {
+        resp.success = false;
+        resp.cause = 'failed to join the room';
+        return resp;
+      }
+      resp.success = true;
+      return resp;
     });
 
 injectable(ModelModules.RoomMember.RemoveMember,
