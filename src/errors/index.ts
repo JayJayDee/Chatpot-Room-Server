@@ -18,3 +18,9 @@ export class BaseSecurityError extends Error {
     super(msg);
   }
 }
+
+export class SecurityExpireError extends BaseSecurityError {
+  constructor(msg: any) {
+    super(msg);
+  }
+}

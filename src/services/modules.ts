@@ -5,6 +5,8 @@ export namespace ServiceModules {
   }
 
   export enum My {
-    Rooms = 'Service/My/Rooms'
+    Rooms = 'Service/My/Rooms',
+    Join = 'Service/My/Join',
+    Leave = 'Service/My/Leave'
   }
 }

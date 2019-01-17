@@ -38,3 +38,11 @@ injectable(ServiceModules.My.Rooms,
         }));
         return resp;
       });
+
+injectable(ServiceModules.My.Join,
+  [],
+  async (): Promise<ServiceTypes.MyService.Join> =>
+
+    async (memberNo: number, roomNo: number) => {
+      // TODO: to be implemented
+    });
