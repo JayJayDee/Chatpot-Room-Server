@@ -39,5 +39,7 @@ export namespace ServiceTypes {
 
   export namespace MyService {
     export type Rooms = (memberNo: number) => Promise<Room[]>;
+    export type Join = (memberNo: number, roomNo: number) => Promise<void>;
+    export type Leave = (memberNo: number, roomNo: number) => Promise<void>;
   }
 }
