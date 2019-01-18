@@ -39,6 +39,20 @@ export const getConnection =
       });
     });
 
+const transaction =
+  (con: PoolConnection): MysqlTypes.MysqlTransaction => ({
+    query(sql, params) {
+      return new Promise((resolve, reject) => {
+        // TODO: to be implemented
+      });
+    },
+    rollback() {
+      return new Promise((resolve, reject) => {
+        // TODO: to be implemented
+      });
+    }
+  });
+
 export const buildMySQLDriver =
   (pool: Pool, getConFunc: GetConnectionFunction) =>
     (): MysqlTypes.MysqlDriver => ({
@@ -66,7 +80,12 @@ export const buildMySQLDriver =
                 con.rollback();
                 return reject(err);
               }
-              // TODO: add implementation for mysql TX
+              const tx = transaction(con);
+              executor(tx).then(resolve)
+              .catch((err) => {
+                con.rollback();
+                return reject(err);
+              });
             });
           });
         });
