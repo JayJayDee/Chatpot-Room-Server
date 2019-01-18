@@ -56,6 +56,20 @@ export const buildMySQLDriver =
           })
           .catch(reject);
         });
+      },
+
+      transaction(executor) {
+        return new Promise((resolve, reject) => {
+          getConFunc(pool).then((con) => {
+            con.beginTransaction((err) => {
+              if (err) {
+                con.rollback();
+                return reject(err);
+              }
+              // TODO: add implementation for mysql TX
+            });
+          });
+        });
       }
     });
 
