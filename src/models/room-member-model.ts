@@ -42,10 +42,12 @@ injectable(ModelModules.RoomMember.AddMember,
         WHERE
           (SELECT COUNT(no) FROM
             chatpot_room_has_member
-              WHERE room_no=? AND member_no=?) = 0
+              WHERE room_no=? AND member_no=?) = 0 AND
+          (SELECT IF(num_attendee >= max_attendee, 1, 0) FROM
+            chatpot_room WHERE no=?) = 0
       `;
       const params = [ param.room_no, param.member_no, isOwner,
-        param.room_no, param.member_no ];
+        param.room_no, param.member_no, param.room_no ];
       await mysql.query(sql, params);
 
       const inspectSql = `
