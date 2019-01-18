@@ -43,12 +43,18 @@ const transaction =
   (con: PoolConnection): MysqlTypes.MysqlTransaction => ({
     query(sql, params) {
       return new Promise((resolve, reject) => {
-        // TODO: to be implemented
+        con.query(sql, params, (err, results) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(results);
+        });
       });
     },
     rollback() {
       return new Promise((resolve, reject) => {
-        // TODO: to be implemented
+        con.rollback();
+        return resolve();
       });
     }
   });
@@ -78,12 +84,18 @@ export const buildMySQLDriver =
             con.beginTransaction((err) => {
               if (err) {
                 con.rollback();
+                con.release();
                 return reject(err);
               }
               const tx = transaction(con);
-              executor(tx).then(resolve)
+              executor(tx).then((resp) => {
+                con.commit();
+                con.release();
+                return resolve(resp);
+              })
               .catch((err) => {
                 con.rollback();
+                con.release();
                 return reject(err);
               });
             });
