@@ -50,7 +50,7 @@ injectable(ModelModules.Room.Create,
           chatpot_room
         SET
           title=?,
-          num_attendee=1,
+          num_attendee=0,
           max_attendee=?,
           reg_date=NOW()
       `;

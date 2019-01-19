@@ -28,51 +28,68 @@ injectable(ModelModules.RoomMember.MyRooms,
 injectable(ModelModules.RoomMember.AddMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.AddMember> =>
-    async (param) => {
-      const resp: ModelTypes.RoomMemberAddRes = {
-        success: false,
-        cause: null
-      };
-      const isOwner: number = param.is_owner === true ? 1 : 0;
-      const sql = `
-        INSERT INTO chatpot_room_has_member
-          (room_no, member_no, is_owner, join_date)
-        SELECT
-          ?, ?, ?, NOW()
-        WHERE
-          (SELECT COUNT(no) FROM
-            chatpot_room_has_member
-              WHERE room_no=? AND member_no=?) = 0 AND
-          (SELECT IF(num_attendee >= max_attendee, 1, 0) FROM
-            chatpot_room WHERE no=?) = 0
-      `;
-      const params = [ param.room_no, param.member_no, isOwner,
-        param.room_no, param.member_no, param.room_no ];
-      await mysql.query(sql, params);
+    async (param) =>
+      await mysql.transaction(async (executor) => {
+        const resp: ModelTypes.RoomMemberAddRes = {
+          success: false,
+          cause: null
+        };
+        const isOwner: number = param.is_owner === true ? 1 : 0;
+        const sql = `
+          INSERT INTO chatpot_room_has_member
+            (room_no, member_no, is_owner, join_date)
+          SELECT
+            ?, ?, ?, NOW()
+        `;
+        const params = [ param.room_no, param.member_no, isOwner ];
+        await executor.query(sql, params);
 
-      const inspectSql = `
-        SELECT
-          *
-        FROM
-          chatpot_room_has_member
-        WHERE
-          room_no=? AND member_no=? AND is_owner=?
-      `;
-      const rows: any[] = await mysql.query(inspectSql, [
-        param.room_no, param.member_no, isOwner
-      ]) as any[];
+        const numUpdateSql = `
+          UPDATE chatpot_room
+            SET num_attendee = num_attendee + 1
+            WHERE no=?
+        `;
+        await executor.query(numUpdateSql, [ param.room_no ]);
 
-      if (rows.length === 0) {
-        resp.success = false;
-        resp.cause = 'failed to join the room';
+        const inspectSql = `
+          SELECT
+            (SELECT COUNT(no)
+              FROM chatpot_room_has_member
+              WHERE room_no=? AND member_no=?) AS member_cnt,
+            r.num_attendee,
+            r.max_attendee
+          FROM
+            chatpot_room r
+          WHERE
+            r.no=?
+        `;
+        const rows: any[] = await executor.query(inspectSql, [
+          param.room_no, param.member_no, param.room_no
+        ]) as any[];
+        const memberCnt: number = rows[0].memberCnt;
+        const numAttendee: number = rows[0].num_attendee;
+        const maxAttendee: number = rows[0].max_attendee;
+
+        let cause = null;
+        if (memberCnt === 0) cause = 'JOIN_FAILURE';
+        else if (memberCnt > 1) cause = 'ALREADY_JOINED';
+        else if (numAttendee > maxAttendee) cause = 'CHAT_MAXIMUM_EXCEED';
+
+        if (cause != null) {
+          resp.success = false;
+          resp.cause = cause;
+          await executor.rollback();
+          return resp;
+        }
+        resp.success = true;
         return resp;
       }
-      resp.success = true;
-      return resp;
-    });
+    ));
 
 injectable(ModelModules.RoomMember.RemoveMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.RemoveMember> =>
-    async (roomNo, memberNo) => {
-    });
+    async (roomNo, memberNo) =>
+      await mysql.transaction((executor) => {
+        return null;
+      }));

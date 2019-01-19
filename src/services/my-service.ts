@@ -6,6 +6,7 @@ import { ServiceTypes } from './types';
 import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
 import { UtilModules, UtilTypes } from '../utils';
+import { RoomJoinError } from './errors';
 
 const convertMember = (token: UtilTypes.Auth.CreateMemberToken) =>
   (m: ExtApiTypes.Member): ServiceTypes.Member => ({
@@ -40,9 +41,24 @@ injectable(ServiceModules.My.Rooms,
       });
 
 injectable(ServiceModules.My.Join,
-  [],
-  async (): Promise<ServiceTypes.MyService.Join> =>
+  [ ModelModules.RoomMember.AddMember ],
+  async (addMemberToRoom: ModelTypes.RoomMember.AddMember): Promise<ServiceTypes.MyService.Join> =>
 
     async (memberNo: number, roomNo: number) => {
-      // TODO: to be implemented
+      const resp = await addMemberToRoom({
+        member_no: memberNo,
+        room_no: roomNo,
+        is_owner: false
+      });
+      if (resp.success === false) {
+        throw new RoomJoinError(resp.cause, 'failed to join room');
+      }
+      // TODO: add push-message sending routine.
+    });
+
+injectable(ServiceModules.My.Leave,
+  [],
+  async (): Promise<ServiceTypes.MyService.Leave> =>
+    async (memberNo: number, roomNo: number) => {
+
     });

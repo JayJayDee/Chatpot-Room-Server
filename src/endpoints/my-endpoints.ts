@@ -14,6 +14,7 @@ injectable(EndpointModules.My.Rooms,
     authorize: MiddlewareTypes.Authorization,
     decrypt: UtilTypes.Auth.DecryptMemberToken,
     getMyRooms: ServiceTypes.MyService.Rooms): Promise<EndpointTypes.Endpoint> =>
+
       ({
         uri: '/my/:member_token/rooms',
         method: EndpointTypes.EndpointMethod.GET,
@@ -26,3 +27,24 @@ injectable(EndpointModules.My.Rooms,
           })
         ]
       }));
+
+
+injectable(EndpointModules.My.Join,
+  [ EndpointModules.Utils.WrapAync,
+    MiddlewareModules.Authorization,
+    UtilModules.Auth.DecryptMemberToken ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    authorize: MiddlewareTypes.Authorization,
+    decrypt: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> =>
+
+    ({
+      uri: '/my/:member_token/join',
+      method: EndpointTypes.EndpointMethod.POST,
+      handler: [
+        authorize(['params', 'member_token']),
+        wrapAsync(async (req, res, next) => {
+          res.status(200).json({});
+        })
+      ]
+    }));
+
