@@ -40,32 +40,44 @@ injectable(ModelModules.RoomMember.AddMember,
             (room_no, member_no, is_owner, join_date)
           SELECT
             ?, ?, ?, NOW()
-          WHERE
-            (SELECT COUNT(no) FROM
-              chatpot_room_has_member
-                WHERE room_no=? AND member_no=?) = 0 AND
-            (SELECT IF(num_attendee >= max_attendee, 1, 0) FROM
-              chatpot_room WHERE no=?) = 0
         `;
-        const params = [ param.room_no, param.member_no, isOwner,
-          param.room_no, param.member_no, param.room_no ];
+        const params = [ param.room_no, param.member_no, isOwner ];
         await executor.query(sql, params);
+
+        const numUpdateSql = `
+          UPDATE chatpot_room
+            SET num_attendee = num_attendee + 1
+            WHERE no=?
+        `;
+        await executor.query(numUpdateSql, [ param.room_no ]);
 
         const inspectSql = `
           SELECT
-            *
+            (SELECT COUNT(no)
+              FROM chatpot_room_has_member
+              WHERE room_no=? AND member_no=?) AS member_cnt,
+            r.num_attendee,
+            r.max_attendee
           FROM
-            chatpot_room_has_member
+            chatpot_room r
           WHERE
-            room_no=? AND member_no=? AND is_owner=?
+            r.no=?
         `;
         const rows: any[] = await executor.query(inspectSql, [
-          param.room_no, param.member_no, isOwner
+          param.room_no, param.member_no, param.room_no
         ]) as any[];
+        const memberCnt: number = rows[0].memberCnt;
+        const numAttendee: number = rows[0].num_attendee;
+        const maxAttendee: number = rows[0].max_attendee;
 
-        if (rows.length === 0) {
+        let cause = null;
+        if (memberCnt === 0) cause = 'JOIN_FAILURE';
+        else if (memberCnt > 1) cause = 'ALREADY_JOINED';
+        else if (numAttendee > maxAttendee) cause = 'CHAT_MAXIMUM_EXCEED';
+
+        if (cause != null) {
           resp.success = false;
-          resp.cause = 'failed to join the room';
+          resp.cause = cause;
           await executor.rollback();
           return resp;
         }
@@ -77,5 +89,7 @@ injectable(ModelModules.RoomMember.AddMember,
 injectable(ModelModules.RoomMember.RemoveMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.RemoveMember> =>
-    async (roomNo, memberNo) => {
-    });
+    async (roomNo, memberNo) =>
+      await mysql.transaction((executor) => {
+        return null;
+      }));
