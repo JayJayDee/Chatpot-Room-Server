@@ -53,4 +53,12 @@ injectable(ServiceModules.My.Join,
       if (resp.success === false) {
         throw new RoomJoinError(resp.cause, 'failed to join room');
       }
+      // TODO: add push-message sending routine.
+    });
+
+injectable(ServiceModules.My.Leave,
+  [],
+  async (): Promise<ServiceTypes.MyService.Leave> =>
+    async (memberNo: number, roomNo: number) => {
+
     });
