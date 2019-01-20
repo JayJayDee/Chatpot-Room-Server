@@ -61,9 +61,15 @@ injectable(EndpointModules.Room.Create,
 
 injectable(EndpointModules.Room.Join,
   [ EndpointModules.Utils.WrapAync,
-    MiddlewareModules.Authorization ],
+    MiddlewareModules.Authorization,
+    UtilModules.Auth.DecryptRoomToken,
+    UtilModules.Auth.DecryptMemberToken,
+    ServiceModules.Room.Join ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    authorize: MiddlewareTypes.Authorization): Promise<EndpointTypes.Endpoint> =>
+    authorize: MiddlewareTypes.Authorization,
+    decryptRoomToken: UtilTypes.Auth.DecryptRoomToken,
+    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken,
+    joinRoom: ServiceTypes.RoomService.Join): Promise<EndpointTypes.Endpoint> =>
     ({
       uri: '/room/:room_token/join',
       method: EndpointTypes.EndpointMethod.POST,
@@ -73,6 +79,14 @@ injectable(EndpointModules.Room.Join,
           const memberToken = req.body.member_token;
           const roomToken = req.params.room_token;
           if (!memberToken || !roomToken) throw new InvalidParamError('member_token required');
+
+          const member = decryptMemberToken(memberToken);
+          const room = decryptRoomToken(roomToken);
+
+          if (!member) throw new InvalidParamError('invalid member_token');
+          if (!room) throw new InvalidParamError('invalid room_token');
+
+          await joinRoom(member.member_no, room.room_no);
           res.status(200).json({});
         })
       ]
