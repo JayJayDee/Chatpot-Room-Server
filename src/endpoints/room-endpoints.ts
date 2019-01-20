@@ -60,16 +60,23 @@ injectable(EndpointModules.Room.Create,
     }));
 
 injectable(EndpointModules.Room.Join,
-  [ EndpointModules.Utils.WrapAync ],
-  async (wrapAsync: EndpointTypes.Utils.WrapAsync): Promise<EndpointTypes.Endpoint> => ({
-    uri: '/room/:room_token/join',
-    method: EndpointTypes.EndpointMethod.POST,
-    handler: [
-      wrapAsync(async (req, res, next) => {
-        res.status(200).json({});
-      })
-    ]
-  }));
+  [ EndpointModules.Utils.WrapAync,
+    MiddlewareModules.Authorization ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    authorize: MiddlewareTypes.Authorization): Promise<EndpointTypes.Endpoint> =>
+    ({
+      uri: '/room/:room_token/join',
+      method: EndpointTypes.EndpointMethod.POST,
+      handler: [
+        authorize(['body', 'member_token']),
+        wrapAsync(async (req, res, next) => {
+          const memberToken = req.body.member_token;
+          const roomToken = req.params.room_token;
+          if (!memberToken || !roomToken) throw new InvalidParamError('member_token required');
+          res.status(200).json({});
+        })
+      ]
+    }));
 
 injectable(EndpointModules.Room.Leave,
   [ EndpointModules.Utils.WrapAync ],
