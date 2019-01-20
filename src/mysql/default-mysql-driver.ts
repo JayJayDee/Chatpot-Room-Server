@@ -39,6 +39,26 @@ export const getConnection =
       });
     });
 
+const transaction =
+  (con: PoolConnection): MysqlTypes.MysqlTransaction => ({
+    query(sql, params) {
+      return new Promise((resolve, reject) => {
+        con.query(sql, params, (err, results) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(results);
+        });
+      });
+    },
+    rollback() {
+      return new Promise((resolve, reject) => {
+        con.rollback();
+        return resolve();
+      });
+    }
+  });
+
 export const buildMySQLDriver =
   (pool: Pool, getConFunc: GetConnectionFunction) =>
     (): MysqlTypes.MysqlDriver => ({
@@ -55,6 +75,31 @@ export const buildMySQLDriver =
             });
           })
           .catch(reject);
+        });
+      },
+
+      transaction(executor) {
+        return new Promise((resolve, reject) => {
+          getConFunc(pool).then((con) => {
+            con.beginTransaction((err) => {
+              if (err) {
+                con.rollback();
+                con.release();
+                return reject(err);
+              }
+              const tx = transaction(con);
+              executor(tx).then((resp) => {
+                con.commit();
+                con.release();
+                return resolve(resp);
+              })
+              .catch((err) => {
+                con.rollback();
+                con.release();
+                return reject(err);
+              });
+            });
+          });
         });
       }
     });

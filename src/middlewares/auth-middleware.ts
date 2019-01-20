@@ -3,7 +3,7 @@ import { injectable } from 'smart-factory';
 import { MiddlewareModules } from './modules';
 import { MiddlewareTypes } from './types';
 import { UtilModules, UtilTypes } from '../utils';
-import { BaseSecurityError } from '../errors';
+import { BaseSecurityError, SecurityExpireError } from '../errors';
 import { ConfigModules, ConfigTypes } from '../configs';
 import { LoggerModules, LoggerTypes } from '../loggers';
 
@@ -30,7 +30,7 @@ injectable(MiddlewareModules.Authentication,
 
         const validated = validateSessionKey(sessionKey);
         if (validated.valid === false) return next(new AuthenticationFailError('invalid session_key'));
-        if (validated.expired === true) return next(new AuthenticationFailError('invalid session_key')); // TODO: to be changed to SESSION_EXPIRED
+        if (validated.expired === true) return next(new SecurityExpireError('session_key expired'));
         next();
       });
 
@@ -63,7 +63,7 @@ injectable(MiddlewareModules.Authorization,
 
           const validated = validateSessionKey(sessionKey);
           if (validated.valid === false) return next(new AuthorizationFailError('invalid session_key'));
-          if (validated.expired === true) return next(new AuthorizationFailError('invalid session_key')); // TODO: to be changed to SESSION_EXPIRED
+          if (validated.expired === true) return next(new SecurityExpireError('session_key expired'));
 
           if (validated.member_no !== member.member_no) return next(new AuthorizationFailError('not allowed operation'));
           next();

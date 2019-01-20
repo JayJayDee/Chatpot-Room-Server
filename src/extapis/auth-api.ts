@@ -10,6 +10,7 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
     request: ExtApiTypes.Request): Promise<ExtApiTypes.AuthReq.MembersByNos> =>
 
     async (memberNos: number[]) => {
+      if (memberNos.length === 0) return [];
       const apiResp: any[] = await request({
         uri: `${cfg.authBaseUri}/internal/member`,
         method: ExtApiTypes.RequestMethod.GET,

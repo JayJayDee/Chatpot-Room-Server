@@ -7,6 +7,7 @@ import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
 import { UtilModules, UtilTypes } from '../utils';
 import { LoggerModules, LoggerTypes } from '../loggers';
+import { RoomJoinError } from './errors';
 
 const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
@@ -80,4 +81,27 @@ injectable(ServiceModules.Room.Create,
       return {
         room_token: token
       };
+    });
+
+injectable(ServiceModules.Room.Join,
+  [ ModelModules.RoomMember.AddMember ],
+  async (addMemberToRoom: ModelTypes.RoomMember.AddMember): Promise<ServiceTypes.RoomService.Join> =>
+
+    async (memberNo: number, roomNo: number) => {
+      const resp = await addMemberToRoom({
+        member_no: memberNo,
+        room_no: roomNo,
+        is_owner: false
+      });
+      if (resp.success === false) {
+        throw new RoomJoinError(resp.cause, 'failed to join room');
+      }
+      // TODO: add push-message sending routine.
+    });
+
+injectable(ServiceModules.Room.Leave,
+  [],
+  async (): Promise<ServiceTypes.RoomService.Leave> =>
+    async (memberNo: number, roomNo: number) => {
+
     });

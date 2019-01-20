@@ -35,6 +35,8 @@ export namespace ServiceTypes {
   export namespace RoomService {
     export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
+    export type Join = (memberNo: number, roomNo: number) => Promise<void>;
+    export type Leave = (memberNo: number, roomNo: number) => Promise<void>;
   }
 
   export namespace MyService {
