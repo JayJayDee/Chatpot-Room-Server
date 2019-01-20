@@ -89,7 +89,37 @@ injectable(ModelModules.RoomMember.AddMember,
 injectable(ModelModules.RoomMember.RemoveMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.RemoveMember> =>
-    async (roomNo, memberNo) =>
-      await mysql.transaction((executor) => {
-        return null;
+    async (memberNo, roomNo) =>
+      await mysql.transaction(async (executor) => {
+        const ret: ModelTypes.RoomMemberRemoveRes = {
+          success: false,
+          destroyRequired: false,
+          cause: null
+        };
+        const decreaseSql = `
+          UPDATE
+            chatpot_room
+          SET
+            num_attendee = num_attendee - 1
+          WHERE
+            no=?
+        `;
+        await executor.query(decreaseSql, [ roomNo ]);
+
+        const removeSql = `
+          DELETE FROM
+            chatpot_room_has_member
+          WHERE
+            room_no=? AND
+            member_no=?
+        `;
+        const resp: any = await executor.query(removeSql, [ roomNo, memberNo ]);
+
+        if (resp.affectedRows !== 1) {
+          executor.rollback();
+          ret.cause = 'NOT_MEMBER_IN_ROOM';
+          return ret;
+        }
+        ret.success = true;
+        return ret;
       }));

@@ -7,7 +7,7 @@ import { ExtApiModules, ExtApiTypes } from '../extapis';
 import { ModelModules, ModelTypes } from '../models';
 import { UtilModules, UtilTypes } from '../utils';
 import { LoggerModules, LoggerTypes } from '../loggers';
-import { RoomJoinError } from './errors';
+import { RoomJoinError, RoomLeaveError } from './errors';
 
 const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
@@ -100,8 +100,13 @@ injectable(ServiceModules.Room.Join,
     });
 
 injectable(ServiceModules.Room.Leave,
-  [],
-  async (): Promise<ServiceTypes.RoomService.Leave> =>
-    async (memberNo: number, roomNo: number) => {
+  [ ModelModules.RoomMember.RemoveMember ],
+  async (removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember): Promise<ServiceTypes.RoomService.Leave> =>
 
+    async (memberNo: number, roomNo: number) => {
+      const resp = await removeMemberFromRoom(memberNo, roomNo);
+      if (resp.success === false) {
+        throw new RoomLeaveError(resp.cause, 'failed to leave room');
+      }
+      // TODO: add push-message sending routine.
     });

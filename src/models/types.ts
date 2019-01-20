@@ -55,9 +55,14 @@ export namespace ModelTypes {
     success: boolean;
     cause: string | null;
   };
+  export type RoomMemberRemoveRes = {
+    success: boolean;
+    destroyRequired: boolean;
+    cause: string | null;
+  };
   export namespace RoomMember {
     export type AddMember = (param: RoomMemberAddParam) => Promise<RoomMemberAddRes>;
-    export type RemoveMember = (roomNo: number, memberNo: number) => Promise<void>;
+    export type RemoveMember = (memberNo: number, roomNo: number) => Promise<RoomMemberRemoveRes>;
     export type MyRooms = (memberNo: number) => Promise<RoomEntity[]>;
   }
 
