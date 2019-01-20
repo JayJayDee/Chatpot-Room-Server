@@ -43,6 +43,7 @@ export namespace ModelTypes {
     export type Get = (roomNo: number) => Promise<RoomEntity>;
     export type Create = (param: RoomCreateParam) => Promise<number>;
     export type UpdateToken = (roomNo: number, token: string) => Promise<void>;
+    export type Destroy = (roomNo: number) => Promise<void>;
   }
 
 
