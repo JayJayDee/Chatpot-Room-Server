@@ -84,8 +84,10 @@ injectable(ServiceModules.Room.Create,
     });
 
 injectable(ServiceModules.Room.Join,
-  [ ModelModules.RoomMember.AddMember ],
-  async (addMemberToRoom: ModelTypes.RoomMember.AddMember): Promise<ServiceTypes.RoomService.Join> =>
+  [ LoggerModules.Logger,
+    ModelModules.RoomMember.AddMember ],
+  async (log: LoggerTypes.Logger,
+    addMemberToRoom: ModelTypes.RoomMember.AddMember): Promise<ServiceTypes.RoomService.Join> =>
 
     async (memberNo: number, roomNo: number) => {
       const resp = await addMemberToRoom({
@@ -96,17 +98,28 @@ injectable(ServiceModules.Room.Join,
       if (resp.success === false) {
         throw new RoomJoinError(resp.cause, 'failed to join room');
       }
+      log.debug(`[room-service] member:${memberNo} joined the room:${roomNo}`);
       // TODO: add push-message sending routine.
     });
 
 injectable(ServiceModules.Room.Leave,
-  [ ModelModules.RoomMember.RemoveMember ],
-  async (removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember): Promise<ServiceTypes.RoomService.Leave> =>
+  [ LoggerModules.Logger,
+    ModelModules.RoomMember.RemoveMember,
+    ModelModules.Room.Destroy ],
+  async (log: LoggerTypes.Logger,
+    removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
+    destroyRoom: ModelTypes.Room.Destroy): Promise<ServiceTypes.RoomService.Leave> =>
 
     async (memberNo: number, roomNo: number) => {
       const resp = await removeMemberFromRoom(memberNo, roomNo);
       if (resp.success === false) {
         throw new RoomLeaveError(resp.cause, 'failed to leave room');
+      }
+      log.debug(`[room-service] member:${memberNo} left the room:${roomNo}`);
+
+      if (resp.destroyRequired === true) {
+        log.debug(`[room-service] room destroyed: ${roomNo}`);
+        await destroyRoom(roomNo);
       }
       // TODO: add push-message sending routine.
     });

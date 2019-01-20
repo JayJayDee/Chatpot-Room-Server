@@ -3,7 +3,8 @@ export namespace ModelModules {
     List = 'Model/Room/List',
     Get = 'Model/Room/Get',
     Create = 'Model/Room/Create',
-    UpdateToken = 'Model/Room/UpdateToken'
+    UpdateToken = 'Model/Room/UpdateToken',
+    Destroy = 'Model/Room/Destroy'
   }
 
   export enum RoomMember {

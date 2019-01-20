@@ -66,14 +66,21 @@ injectable(ModelModules.RoomMember.AddMember,
         const rows: any[] = await executor.query(inspectSql, [
           param.room_no, param.member_no, param.room_no
         ]) as any[];
-        const memberCnt: number = rows[0].memberCnt;
+
+        if (rows.length === 0) {
+          resp.success = false;
+          resp.cause = 'ROOM_NOT_FOUND';
+          return resp;
+        }
+
+        const memberCnt: number = rows[0].member_cnt;
         const numAttendee: number = rows[0].num_attendee;
         const maxAttendee: number = rows[0].max_attendee;
 
         let cause = null;
-        if (memberCnt === 0) cause = 'JOIN_FAILURE';
-        else if (memberCnt > 1) cause = 'ALREADY_JOINED';
-        else if (numAttendee > maxAttendee) cause = 'CHAT_MAXIMUM_EXCEED';
+        if (memberCnt === 0) cause = 'ROOM_JOIN_FAILURE';
+        else if (memberCnt > 1) cause = 'ROOM_ALREADY_JOINED';
+        else if (numAttendee > maxAttendee) cause = 'ROOM_MAXIMUM_EXCEED';
 
         if (cause != null) {
           resp.success = false;
@@ -104,7 +111,12 @@ injectable(ModelModules.RoomMember.RemoveMember,
           WHERE
             no=?
         `;
-        await executor.query(decreaseSql, [ roomNo ]);
+        let resp: any = await executor.query(decreaseSql, [ roomNo ]);
+        if (resp.affectedRows === 0) {
+          executor.rollback();
+          ret.cause = 'ROOM_NOT_FOUND';
+          return ret;
+        }
 
         const removeSql = `
           DELETE FROM
@@ -113,12 +125,22 @@ injectable(ModelModules.RoomMember.RemoveMember,
             room_no=? AND
             member_no=?
         `;
-        const resp: any = await executor.query(removeSql, [ roomNo, memberNo ]);
+        resp  = await executor.query(removeSql, [ roomNo, memberNo ]);
 
         if (resp.affectedRows !== 1) {
           executor.rollback();
           ret.cause = 'NOT_MEMBER_IN_ROOM';
           return ret;
+        }
+
+        const numAteendeeSql = `
+          SELECT num_attendee
+            FROM chatpot_room
+              WHERE no=?
+        `;
+        const rows: any[] = await executor.query(numAteendeeSql, [ roomNo ]) as any[];
+        if (rows[0].num_attendee === 0) {
+          ret.destroyRequired = true;
         }
         ret.success = true;
         return ret;

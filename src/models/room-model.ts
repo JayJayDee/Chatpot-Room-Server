@@ -57,18 +57,7 @@ injectable(ModelModules.Room.Create,
       const params: any[] = [ param.title, param.max_attendee ];
       const resp: any = await mysql.query(sql, params);
       if (resp.affectedRows !== 1) return null;
-
       const newRoomNo: number = resp.insertId;
-      const memberSql = `
-        INSERT INTO
-          chatpot_room_has_member
-        SET
-          room_no=?,
-          member_no=?,
-          is_owner=1,
-          join_date=NOW()
-      `;
-      await mysql.query(memberSql, [ newRoomNo, param.owner_no ]);
       return newRoomNo;
     });
 
@@ -89,4 +78,19 @@ injectable(ModelModules.Room.UpdateToken,
       if (resp.affectedRows !== 1) {
         // TODO: throw exception.
       }
+    });
+
+injectable(ModelModules.Room.Destroy,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.Destroy> =>
+    async (roomNo) => {
+      const sql = `
+        DELETE FROM
+          chatpot_room
+        WHERE
+          no=? AND
+          num_attendee = 0
+      `;
+      await mysql.query(sql, [ roomNo ]);
+      // TODO: think about cas of not-deleted room.
     });
