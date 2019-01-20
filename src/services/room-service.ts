@@ -53,12 +53,14 @@ injectable(ServiceModules.Room.Create,
     ModelModules.Room.Create,
     ModelModules.Room.UpdateToken,
     ModelModules.RoomMember.AddMember,
-    UtilModules.Auth.CrateRoomToken ],
+    UtilModules.Auth.CrateRoomToken,
+    ModelModules.History.Write ],
   async (log: LoggerTypes.Logger,
     create: ModelTypes.Room.Create,
     updateToken: ModelTypes.Room.UpdateToken,
     addMember: ModelTypes.RoomMember.AddMember,
-    createRoomToken: UtilTypes.Auth.CreateRoomToken): Promise<ServiceTypes.RoomService.Create> =>
+    createRoomToken: UtilTypes.Auth.CreateRoomToken,
+    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
       const createdRoomNo = await create(param);
@@ -78,6 +80,14 @@ injectable(ServiceModules.Room.Create,
       } else {
         log.error(`[room-service] room:${createdRoomNo}, member:${param.owner_no} join fail: ${addResp.cause}`);
       }
+
+      history({
+        action: ModelTypes.HistoryAction.CREATE,
+        member_no: param.owner_no,
+        room_no: createdRoomNo,
+        room_title: param.title
+      });
+
       return {
         room_token: token
       };
@@ -85,30 +95,39 @@ injectable(ServiceModules.Room.Create,
 
 injectable(ServiceModules.Room.Join,
   [ LoggerModules.Logger,
-    ModelModules.RoomMember.AddMember ],
+    ModelModules.RoomMember.AddMember,
+    ModelModules.History.Write ],
   async (log: LoggerTypes.Logger,
-    addMemberToRoom: ModelTypes.RoomMember.AddMember): Promise<ServiceTypes.RoomService.Join> =>
+    addMemberToRoom: ModelTypes.RoomMember.AddMember,
+    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Join> =>
 
-    async (memberNo: number, roomNo: number) => {
-      const resp = await addMemberToRoom({
-        member_no: memberNo,
-        room_no: roomNo,
-        is_owner: false
+      async (memberNo: number, roomNo: number) => {
+        const resp = await addMemberToRoom({
+          member_no: memberNo,
+          room_no: roomNo,
+          is_owner: false
+        });
+        if (resp.success === false) {
+          throw new RoomJoinError(resp.cause, 'failed to join room');
+        }
+        log.debug(`[room-service] member:${memberNo} joined the room:${roomNo}`);
+        // TODO: add push-message sending routine.
+        history({
+          action: ModelTypes.HistoryAction.JOIN,
+          member_no: memberNo,
+          room_no: roomNo,
+        });
       });
-      if (resp.success === false) {
-        throw new RoomJoinError(resp.cause, 'failed to join room');
-      }
-      log.debug(`[room-service] member:${memberNo} joined the room:${roomNo}`);
-      // TODO: add push-message sending routine.
-    });
 
 injectable(ServiceModules.Room.Leave,
   [ LoggerModules.Logger,
     ModelModules.RoomMember.RemoveMember,
-    ModelModules.Room.Destroy ],
+    ModelModules.Room.Destroy,
+    ModelModules.History.Write ],
   async (log: LoggerTypes.Logger,
     removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
-    destroyRoom: ModelTypes.Room.Destroy): Promise<ServiceTypes.RoomService.Leave> =>
+    destroyRoom: ModelTypes.Room.Destroy,
+    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Leave> =>
 
     async (memberNo: number, roomNo: number) => {
       const resp = await removeMemberFromRoom(memberNo, roomNo);
@@ -117,8 +136,19 @@ injectable(ServiceModules.Room.Leave,
       }
       log.debug(`[room-service] member:${memberNo} left the room:${roomNo}`);
 
+      await history({
+        action: ModelTypes.HistoryAction.LEAVE,
+        member_no: memberNo,
+        room_no: roomNo,
+      });
+
       if (resp.destroyRequired === true) {
         log.debug(`[room-service] room destroyed: ${roomNo}`);
+        history({
+          action: ModelTypes.HistoryAction.DESTROY,
+          member_no: memberNo,
+          room_no: roomNo,
+        });
         await destroyRoom(roomNo);
       }
       // TODO: add push-message sending routine.

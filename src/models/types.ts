@@ -70,4 +70,20 @@ export namespace ModelTypes {
   export namespace Converter {
     export type Room = (r: any) => RoomEntity;
   }
+
+  export enum HistoryAction {
+    CREATE = 'CREATE',
+    JOIN = 'JOIN',
+    LEAVE = 'LEAVE',
+    DESTROY = 'DESTROY'
+  }
+  export type HistoryElement = {
+    action: HistoryAction;
+    member_no: number;
+    room_no: number;
+    room_title?: string;
+  };
+  export namespace History {
+    export type Write = (elem: HistoryElement) => Promise<void>;
+  }
 }

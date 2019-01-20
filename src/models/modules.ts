@@ -16,4 +16,8 @@ export namespace ModelModules {
   export enum Converter {
     Room = 'Model/Converter/Room'
   }
+
+  export enum History {
+    Write = 'Model/History/Write'
+  }
 }
