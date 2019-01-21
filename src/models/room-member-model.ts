@@ -98,7 +98,7 @@ injectable(ModelModules.RoomMember.AddMember,
 const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver) =>
   async (roomNo: number): Promise<number> => {
     const sql = `
-      SELECT COUNT(no) AS num_owner FROM
+      SELECT * FROM
         chatpot_room_has_member WHERE room_no=?
     `;
     const rows: any[] = await con.query(sql, [ roomNo ]) as any[];
