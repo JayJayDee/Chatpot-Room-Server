@@ -99,7 +99,7 @@ const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver
   async (roomNo: number): Promise<number> => {
     const sql = `
       SELECT COUNT(no) AS num_owner FROM
-        room_has_member WHERE room_no=?
+        chatpot_room_has_member WHERE room_no=?
     `;
     const rows: any[] = await con.query(sql, [ roomNo ]) as any[];
     const ownerRow = find(rows, {is_owner: 1} as any);
@@ -110,7 +110,7 @@ const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver
 
     const updateSql = `
       UPDATE
-        room_has_member
+        chatpot_room_has_member
       SET
         is_owner=1
       WHERE
