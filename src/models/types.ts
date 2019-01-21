@@ -59,6 +59,7 @@ export namespace ModelTypes {
   export type RoomMemberRemoveRes = {
     success: boolean;
     destroyRequired: boolean;
+    newOwnerNo: number;
     cause: string | null;
   };
   export namespace RoomMember {
