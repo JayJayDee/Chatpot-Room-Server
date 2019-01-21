@@ -1,4 +1,6 @@
 import { injectable } from 'smart-factory';
+import { shuffle, find } from 'lodash';
+
 import { ModelModules } from './modules';
 import { ModelTypes } from './types';
 import { MysqlModules, MysqlTypes } from '../mysql';
@@ -93,6 +95,31 @@ injectable(ModelModules.RoomMember.AddMember,
       }
     ));
 
+const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver) =>
+  async (roomNo: number): Promise<number> => {
+    const sql = `
+      SELECT COUNT(no) AS num_owner FROM
+        room_has_member WHERE room_no=?
+    `;
+    const rows: any[] = await con.query(sql, [ roomNo ]) as any[];
+    const ownerRow = find(rows, {is_owner: 1} as any);
+    if (ownerRow) return null;
+
+    const shuffledMemNos: number[] = shuffle(rows.map((r) => r.member_no));
+    const newOwnerNo = shuffledMemNos[0];
+
+    const updateSql = `
+      UPDATE
+        room_has_member
+      SET
+        is_owner=1
+      WHERE
+        room_no=? AND member_no=?
+    `;
+    await con.query(updateSql, [ roomNo, newOwnerNo ]);
+    return newOwnerNo;
+  };
+
 injectable(ModelModules.RoomMember.RemoveMember,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.RemoveMember> =>
@@ -101,6 +128,7 @@ injectable(ModelModules.RoomMember.RemoveMember,
         const ret: ModelTypes.RoomMemberRemoveRes = {
           success: false,
           destroyRequired: false,
+          newOwnerNo: null,
           cause: null
         };
         const decreaseSql = `
@@ -142,6 +170,12 @@ injectable(ModelModules.RoomMember.RemoveMember,
         if (rows[0].num_attendee === 0) {
           ret.destroyRequired = true;
         }
+
+        if (ret.destroyRequired === false) {
+          const elect = electNewOwner(executor);
+          ret.newOwnerNo = await elect(roomNo);
+        }
+
         ret.success = true;
         return ret;
       }));
