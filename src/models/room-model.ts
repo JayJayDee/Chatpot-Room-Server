@@ -38,7 +38,30 @@ injectable(ModelModules.Room.Get,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.Get> =>
     async (roomNo: number) => {
-      return null;
+      const sql = `
+        SELECT
+          r.*,
+          rhm.member_no AS owner_no
+        FROM
+          chatpot_room AS r
+        INNER JOIN
+          chatpot_room_has_member AS rhm
+            ON rhm.room_no=r.no AND rhm.is_owner=1
+        WHERE
+          r.no=?
+      `;
+      const rows: any[] = await mysql.query(sql, [ roomNo ]) as any[];
+      if (rows.length === 0) return null;
+      const room: ModelTypes.RoomEntity = {
+        no: rows[0].no,
+        token: rows[0].token,
+        owner_no: rows[0].owner_no,
+        title: rows[0].title,
+        num_attendee: rows[0].num_attendee,
+        max_attendee: rows[0].max_attendee,
+        reg_date: rows[0].reg_date
+      };
+      return room;
     });
 
 injectable(ModelModules.Room.Create,

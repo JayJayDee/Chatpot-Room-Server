@@ -186,5 +186,23 @@ injectable(ModelModules.RoomMember.Members,
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.Members> =>
 
     async (roomNo) => {
-      return [];
+      const sql = `
+        SELECT
+          rhm.no,
+          rhm.member_no,
+          rhm.is_owner,
+          rhm.join_date
+        FROM
+          chatpot_room_has_member AS rhm
+        WHERE
+          rhm.room_no=?
+      `;
+      const rows: any[] = await mysql.query(sql, [ roomNo ]) as any[];
+      const members: ModelTypes.RoomMemberEntity[] = rows.map((r) => ({
+        no: r.no,
+        member_no: r.member_no,
+        is_owner: r.is_owner === 1 ? true : false,
+        join_date: r.join_date
+      }));
+      return members;
     });

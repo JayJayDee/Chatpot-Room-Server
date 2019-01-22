@@ -126,15 +126,29 @@ injectable(EndpointModules.Room.Leave,
         ]
       }));
 
-injectable(EndpointModules.Room.Members,
-  [ EndpointModules.Utils.WrapAync ],
-  async (wrapAsync: EndpointTypes.Utils.WrapAsync): Promise<EndpointTypes.Endpoint> =>
+injectable(EndpointModules.Room.Get,
+  [ EndpointModules.Utils.WrapAync,
+    UtilModules.Auth.DecryptRoomToken,
+    ServiceModules.Room.Get,
+    MiddlewareModules.Authentication ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    decryptRoomToken: UtilTypes.Auth.DecryptRoomToken,
+    getRoomDetail: ServiceTypes.RoomService.Get,
+    authenticate: MiddlewareTypes.Authentication): Promise<EndpointTypes.Endpoint> =>
     ({
-      uri: '/room/:room_token/members',
+      uri: '/room/:room_token',
       method: EndpointTypes.EndpointMethod.GET,
       handler: [
+        authenticate,
         wrapAsync(async (req, res, next) => {
-          res.status(200).json({});
+          const roomToken = req.params['room_token'];
+          if (!roomToken) throw new InvalidParamError('room_token');
+
+          const room = decryptRoomToken(roomToken);
+          if (!room) throw new InvalidParamError('invalid room_token');
+
+          const roomDetail = await getRoomDetail(room.room_no);
+          res.status(200).json(roomDetail);
         })
       ]
     }));

@@ -22,6 +22,9 @@ export namespace ServiceTypes {
     size: number;
     list: Room[];
   };
+  export interface RoomDetail extends Room {
+    members: Member[];
+  }
 
   export type ReqRoomCreate = {
     owner_no: number;
@@ -42,7 +45,7 @@ export namespace ServiceTypes {
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
     export type Join = (memberNo: number, roomNo: number) => Promise<void>;
     export type Leave = (memberNo: number, roomNo: number) => Promise<void>;
-    export type Members = (roomNo: number) => Promise<RoomMember[]>;
+    export type Get = (roomNo: number) => Promise<RoomDetail>;
   }
 
   export namespace MyService {

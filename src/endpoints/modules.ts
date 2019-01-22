@@ -10,7 +10,7 @@ export namespace EndpointModules {
     List = 'Endpoint/Room/List',
     Join = 'Endpoint/Room/Join',
     Leave = 'Endpoint/Room/Leave',
-    Members = 'Endpoint/Room/Members'
+    Get = 'Endpoint/Room/Get'
   }
 
   export enum My {
