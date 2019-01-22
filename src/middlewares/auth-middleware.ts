@@ -31,6 +31,8 @@ injectable(MiddlewareModules.Authentication,
         const validated = validateSessionKey(sessionKey);
         if (validated.valid === false) return next(new AuthenticationFailError('invalid session_key'));
         if (validated.expired === true) return next(new SecurityExpireError('session_key expired'));
+
+        res.locals['member_no'] = validated.member_no;
         next();
       });
 
@@ -64,7 +66,8 @@ injectable(MiddlewareModules.Authorization,
           const validated = validateSessionKey(sessionKey);
           if (validated.valid === false) return next(new AuthorizationFailError('invalid session_key'));
           if (validated.expired === true) return next(new SecurityExpireError('session_key expired'));
-
           if (validated.member_no !== member.member_no) return next(new AuthorizationFailError('not allowed operation'));
+
+          res.locals['member_no'] = validated.member_no;
           next();
         });

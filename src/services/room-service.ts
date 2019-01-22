@@ -159,10 +159,33 @@ injectable(ServiceModules.Room.Leave,
       // TODO: add push-message sending routine.
     });
 
-injectable(ServiceModules.Room.Members,
-  [],
-  async (): Promise<ServiceTypes.RoomService.Members> =>
+injectable(ServiceModules.Room.Get,
+  [ ModelModules.Room.Get,
+    ModelModules.RoomMember.Members,
+    ExtApiModules.AuthReq.MembersByNos,
+    UtilModules.Auth.CreateMemberToken ],
+  async (getRoom: ModelTypes.Room.Get,
+    getMembers: ModelTypes.RoomMember.Members,
+    requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos,
+    createMemberToken: UtilTypes.Auth.CreateMemberToken): Promise<ServiceTypes.RoomService.Get> =>
 
     async (roomNo: number) => {
-      return [];
+      const room = await getRoom(roomNo);
+      if (room === null) return null;
+
+      const membersFromDb = await getMembers(roomNo);
+      const memberNos = membersFromDb.map((m) => m.member_no);
+      const membersFromApi = await requestMembersViaApi(memberNos);
+      const convert = cvtMember(createMemberToken);
+
+      const roomDetail: ServiceTypes.RoomDetail = {
+        room_token: room.token,
+        owner: convert(find(membersFromApi, {member_no: room.owner_no})),
+        title: room.title,
+        num_attendee: room.num_attendee,
+        max_attendee: room.max_attendee,
+        reg_date: room.reg_date,
+        members: membersFromDb.map((m) => convert(find(membersFromApi, {member_no: m.member_no})))
+      };
+      return roomDetail;
     });

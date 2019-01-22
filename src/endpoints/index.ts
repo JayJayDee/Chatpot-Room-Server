@@ -12,15 +12,15 @@ injectable(EndpointModules.Endpoints,
     EndpointModules.Room.Join,
     EndpointModules.Room.Leave,
     EndpointModules.My.Rooms,
-    EndpointModules.Room.Members],
+    EndpointModules.Room.Get],
 
   async (create: EndpointTypes.Endpoint,
     list: EndpointTypes.Endpoint,
     join: EndpointTypes.Endpoint,
     leave: EndpointTypes.Endpoint,
     myRooms: EndpointTypes.Endpoint,
-    members: EndpointTypes.Endpoint) =>
+    get: EndpointTypes.Endpoint) =>
 
     ([
-      create, list, join, leave, myRooms, members
+      create, list, join, leave, myRooms, get
     ]));

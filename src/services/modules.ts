@@ -4,7 +4,7 @@ export namespace ServiceModules {
     Create = 'Service/Room/Create',
     Join = 'Service/Room/Join',
     Leave = 'Service/Room/Leave',
-    Members = 'Service/Room/Members'
+    Get = 'Service/Room/Get'
   }
 
   export enum My {
