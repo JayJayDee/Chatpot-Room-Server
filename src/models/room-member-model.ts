@@ -70,6 +70,7 @@ injectable(ModelModules.RoomMember.AddMember,
         ]) as any[];
 
         if (rows.length === 0) {
+          await executor.rollback();
           resp.success = false;
           resp.cause = 'ROOM_NOT_FOUND';
           return resp;
@@ -85,9 +86,9 @@ injectable(ModelModules.RoomMember.AddMember,
         else if (numAttendee > maxAttendee) cause = 'ROOM_MAXIMUM_EXCEED';
 
         if (cause != null) {
+          await executor.rollback();
           resp.success = false;
           resp.cause = cause;
-          await executor.rollback();
           return resp;
         }
         resp.success = true;
