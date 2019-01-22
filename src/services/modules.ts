@@ -2,11 +2,12 @@ export namespace ServiceModules {
   export enum Room {
     List = 'Service/Room/List',
     Create = 'Service/Room/Create',
-    Join = 'Service/My/Join',
-    Leave = 'Service/My/Leave'
+    Join = 'Service/Room/Join',
+    Leave = 'Service/Room/Leave',
+    Members = 'Service/Room/Members'
   }
 
   export enum My {
-    Rooms = 'Service/My/Rooms'
+    Rooms = 'Service/Room/My/Rooms'
   }
 }

@@ -10,7 +10,8 @@ export namespace ModelModules {
   export enum RoomMember {
     AddMember = 'Model/RoomMember/AddMember',
     RemoveMember = 'Model/RoomMember/RemoveMember',
-    MyRooms = 'Model/RoomMember/MyRooms'
+    MyRooms = 'Model/RoomMember/MyRooms',
+    Members = 'Model/RoomMember/Members'
   }
 
   export enum Converter {

@@ -32,11 +32,17 @@ export namespace ServiceTypes {
     room_token: string;
   };
 
+  export interface RoomMember extends Member {
+    is_owner: boolean;
+    join_date: Date;
+  }
+
   export namespace RoomService {
     export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
     export type Join = (memberNo: number, roomNo: number) => Promise<void>;
     export type Leave = (memberNo: number, roomNo: number) => Promise<void>;
+    export type Members = (roomNo: number) => Promise<RoomMember[]>;
   }
 
   export namespace MyService {

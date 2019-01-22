@@ -158,3 +158,11 @@ injectable(ServiceModules.Room.Leave,
       }
       // TODO: add push-message sending routine.
     });
+
+injectable(ServiceModules.Room.Members,
+  [],
+  async (): Promise<ServiceTypes.RoomService.Members> =>
+
+    async (roomNo: number) => {
+      return [];
+    });

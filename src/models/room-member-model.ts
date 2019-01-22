@@ -180,3 +180,11 @@ injectable(ModelModules.RoomMember.RemoveMember,
         ret.success = true;
         return ret;
       }));
+
+injectable(ModelModules.RoomMember.Members,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.RoomMember.Members> =>
+
+    async (roomNo) => {
+      return [];
+    });

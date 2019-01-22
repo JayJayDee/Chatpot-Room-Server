@@ -66,6 +66,7 @@ export namespace ModelTypes {
     export type AddMember = (param: RoomMemberAddParam) => Promise<RoomMemberAddRes>;
     export type RemoveMember = (memberNo: number, roomNo: number) => Promise<RoomMemberRemoveRes>;
     export type MyRooms = (memberNo: number) => Promise<RoomEntity[]>;
+    export type Members = (roomNo: number) => Promise<RoomMemberEntity[]>;
   }
 
   export namespace Converter {
