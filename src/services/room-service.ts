@@ -136,6 +136,11 @@ injectable(ServiceModules.Room.Leave,
       }
       log.debug(`[room-service] member:${memberNo} left the room:${roomNo}`);
 
+      if (resp.newOwnerNo) {
+        log.debug(`[room-service] member:${resp.newOwnerNo} elected as a new owner`);
+        // TODO: send push message to new-owner
+      }
+
       await history({
         action: ModelTypes.HistoryAction.LEAVE,
         member_no: memberNo,

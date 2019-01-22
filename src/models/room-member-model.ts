@@ -70,6 +70,7 @@ injectable(ModelModules.RoomMember.AddMember,
         ]) as any[];
 
         if (rows.length === 0) {
+          await executor.rollback();
           resp.success = false;
           resp.cause = 'ROOM_NOT_FOUND';
           return resp;
@@ -85,9 +86,9 @@ injectable(ModelModules.RoomMember.AddMember,
         else if (numAttendee > maxAttendee) cause = 'ROOM_MAXIMUM_EXCEED';
 
         if (cause != null) {
+          await executor.rollback();
           resp.success = false;
           resp.cause = cause;
-          await executor.rollback();
           return resp;
         }
         resp.success = true;
@@ -98,8 +99,8 @@ injectable(ModelModules.RoomMember.AddMember,
 const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver) =>
   async (roomNo: number): Promise<number> => {
     const sql = `
-      SELECT COUNT(no) AS num_owner FROM
-        room_has_member WHERE room_no=?
+      SELECT * FROM
+        chatpot_room_has_member WHERE room_no=?
     `;
     const rows: any[] = await con.query(sql, [ roomNo ]) as any[];
     const ownerRow = find(rows, {is_owner: 1} as any);
@@ -110,7 +111,7 @@ const electNewOwner = (con: MysqlTypes.MysqlTransaction | MysqlTypes.MysqlDriver
 
     const updateSql = `
       UPDATE
-        room_has_member
+        chatpot_room_has_member
       SET
         is_owner=1
       WHERE
