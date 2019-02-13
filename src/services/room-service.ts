@@ -32,14 +32,18 @@ injectable(ServiceModules.Room.List,
       const memberNos: number[] = roomResp.list.map((r) => r.owner_no);
       const members = await requestMembersViaApi(memberNos);
 
-      const rooms: ServiceTypes.Room[] = roomResp.list.map((r) => ({
-        room_token: r.token,
-        owner: convert(find(members, {member_no: r.owner_no})),
-        title: r.title,
-        num_attendee: r.num_attendee,
-        max_attendee: r.max_attendee,
-        reg_date: r.reg_date
-      }));
+      const rooms: ServiceTypes.Room[] = roomResp.list.map((r) => {
+        const owner = convert(find(members, {member_no: r.owner_no}));
+        if (!owner) return null;
+        return {
+          room_token: r.token,
+          owner: convert(find(members, {member_no: r.owner_no})),
+          title: r.title,
+          num_attendee: r.num_attendee,
+          max_attendee: r.max_attendee,
+          reg_date: r.reg_date
+        };
+      }).filter((r) => r);
 
       return {
         all: roomResp.all,
