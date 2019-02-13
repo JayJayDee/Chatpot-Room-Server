@@ -85,8 +85,11 @@ injectable(UtilModules.Auth.DecryptRoomToken,
       });
 
 injectable(UtilModules.Auth.ValidateSessionKey,
-  [ ConfigModules.CredentialConfig ],
-  async (cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.ValidateSessionKey> =>
+  [ LoggerModules.Logger,
+    ConfigModules.CredentialConfig ],
+  async (log: LoggerTypes.Logger,
+    cfg: ConfigTypes.CredentialConfig): Promise<UtilTypes.Auth.ValidateSessionKey> =>
+
     (sessionKey) => {
       const dp = decipher(cfg.authSecret);
       const resp: UtilTypes.DecryptedSessionKey = {
@@ -97,6 +100,7 @@ injectable(UtilModules.Auth.ValidateSessionKey,
       try {
         let decrypted: string = dp.update(sessionKey, 'hex', 'utf8');
         decrypted += dp.final('utf8');
+        log.debug(`[auth-util] decrypted-session-key = ${decrypted}`);
         const splited: string[] = decrypted.split('|@|');
         if (splited.length !== 2) return resp;
         const createdAt = parseInt(splited[1]);
