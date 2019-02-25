@@ -7,7 +7,7 @@ export namespace ServiceTypes {
     profile_thumb: string;
   };
   export type Member = {
-    member_token: string;
+    token: string;
     region: string;
     language: string;
     gender: string;

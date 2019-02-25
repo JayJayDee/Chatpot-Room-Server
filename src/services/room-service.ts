@@ -11,7 +11,7 @@ import { RoomJoinError, RoomLeaveError } from './errors';
 
 const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
-    member_token: encrypt(fromMember.member_no),
+    token: encrypt(fromMember.member_no),
     region: fromMember.region,
     language: fromMember.language,
     gender: fromMember.gender,

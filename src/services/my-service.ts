@@ -9,7 +9,7 @@ import { UtilModules, UtilTypes } from '../utils';
 
 const convertMember = (token: UtilTypes.Auth.CreateMemberToken) =>
   (m: ExtApiTypes.Member): ServiceTypes.Member => ({
-    member_token: token(m.member_no),
+    token: token(m.member_no),
     region: m.region,
     language: m.language,
     gender: m.gender,
