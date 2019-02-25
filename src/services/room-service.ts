@@ -15,7 +15,8 @@ const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
     region: fromMember.region,
     language: fromMember.language,
     gender: fromMember.gender,
-    nick: fromMember.nick
+    nick: fromMember.nick,
+    avatar: fromMember.avatar
   });
 
 injectable(ServiceModules.Room.List,

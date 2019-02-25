@@ -17,11 +17,16 @@ export namespace ExtApiTypes {
     language: string;
     gender: string;
     nick: Nick;
+    avatar: Avatar;
   };
   export type Nick = {
     en: string;
     ko: string;
     ja: string;
+  };
+  export type Avatar = {
+    profile_img: string;
+    profile_thumb: string;
   };
 
   export namespace AuthReq {
