@@ -2,12 +2,17 @@ import { ExtApiTypes } from '../extapis';
 import { ModelTypes } from '../models';
 
 export namespace ServiceTypes {
+  export type Avatar = {
+    profile_img: string;
+    profile_thumb: string;
+  };
   export type Member = {
     member_token: string;
     region: string;
     language: string;
     gender: string;
     nick: ExtApiTypes.Nick;
+    avatar: Avatar;
   };
   export type Room = {
     room_token: string;

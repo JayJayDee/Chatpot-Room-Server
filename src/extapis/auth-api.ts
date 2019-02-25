@@ -21,7 +21,8 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
         region: elem.region,
         language: elem.language,
         gender: elem.gender,
-        nick: elem.nick
+        nick: elem.nick,
+        avatar: elem.avatar
       }));
       return members;
     });
