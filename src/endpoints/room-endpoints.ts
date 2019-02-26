@@ -18,7 +18,6 @@ injectable(EndpointModules.Room.List,
         uri: '/rooms',
         method: EndpointTypes.EndpointMethod.GET,
         handler: [
-          authenticate,
           wrapAsync(async (req, res, next) => {
             const rooms = await queryRooms({});
             res.status(200).json(rooms);
