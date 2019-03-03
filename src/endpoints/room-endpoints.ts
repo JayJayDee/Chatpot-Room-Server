@@ -19,7 +19,22 @@ injectable(EndpointModules.Room.List,
         method: EndpointTypes.EndpointMethod.GET,
         handler: [
           wrapAsync(async (req, res, next) => {
-            const rooms = await queryRooms({});
+            const offsetExpr = req.query['offset'];
+            const sizeExpr = req.query['size'];
+
+            let offset: number = null;
+            let size: number = null;
+
+            try {
+              if (offsetExpr && sizeExpr) {
+                offset = parseInt(offsetExpr);
+                size = parseInt(sizeExpr);
+              }
+            } catch (err) {
+              throw new InvalidParamError('offset, size must be number');
+            }
+
+            const rooms = await queryRooms({ offset, size });
             res.status(200).json(rooms);
           })
         ]

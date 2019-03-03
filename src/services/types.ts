@@ -25,6 +25,7 @@ export namespace ServiceTypes {
   export type RoomList = {
     all: number;
     size: number;
+    offset: number;
     list: Room[];
   };
   export interface RoomDetail extends Room {

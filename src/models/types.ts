@@ -18,6 +18,7 @@ export namespace ModelTypes {
 
   export type RoomListEntity = {
     all: number;
+    offset: number;
     size: number;
     list: RoomEntity[];
   };
