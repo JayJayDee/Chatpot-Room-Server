@@ -14,11 +14,14 @@ injectable(ModelModules.RoomMember.MyRooms,
         const sql = `
           SELECT
             r.*,
-            rhm.member_no AS owner_no
+            rhmo.member_no AS owner_no
           FROM
             chatpot_room_has_member AS rhm
           INNER JOIN
             chatpot_room AS r ON r.no=rhm.room_no
+          INNER JOIN
+            chatpot_room_has_member AS rhmo ON
+              rhmo.room_no=rhm.room_no AND rhmo.is_owner=1
           WHERE
             rhm.member_no=?
         `;
