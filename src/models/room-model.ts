@@ -14,6 +14,7 @@ injectable(ModelModules.Room.List,
 
         const query = `
           SELECT
+            SQL_CALC_FOUND_ROWS
             r.*,
             rhm.member_no AS owner_no
           FROM
@@ -26,9 +27,13 @@ injectable(ModelModules.Room.List,
         `;
         const params = [ offset, size ];
         const rows: any[] = await mysql.query(query, params) as any[];
+        const foundRows: any[] = await mysql.query('SELECT FOUND_ROWS() AS rs') as any[];
+
+        const all = foundRows[0].rs;
         const rooms: ModelTypes.RoomEntity[] = rows.map(cvtRoom);
         return {
-          all: 100, // TODO: to be replaced to num_all with no-filtered.
+          all,
+          offset,
           size: rooms.length,
           list: rooms
         };

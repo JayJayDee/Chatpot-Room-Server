@@ -49,6 +49,7 @@ injectable(ServiceModules.Room.List,
       return {
         all: roomResp.all,
         size: roomResp.size,
+        offset: roomResp.offset,
         list: rooms
       };
     });
