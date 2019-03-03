@@ -11,6 +11,7 @@ injectable(ModelModules.Room.List,
       async (param) => {
         let offset: number = param.offset ? param.offset : 0;
         let size: number = param.size ? param.size : 10;
+        let order: ModelTypes.RoomOrder = param.order ? param.order : ModelTypes.RoomOrder.REGDATE_DESC;
 
         const query = `
           SELECT
@@ -22,6 +23,7 @@ injectable(ModelModules.Room.List,
           INNER JOIN
             chatpot_room_has_member AS rhm ON
               rhm.room_no=r.no AND rhm.is_owner=1
+          ${getOrderQuery(order)}
           LIMIT
             ?,?
         `;
@@ -38,6 +40,14 @@ injectable(ModelModules.Room.List,
           list: rooms
         };
       });
+
+const getOrderQuery = (order: ModelTypes.RoomOrder): string => {
+  if (order === ModelTypes.RoomOrder.REGDATE_DESC) return 'ORDER BY r.reg_date DESC';
+  else if (order === ModelTypes.RoomOrder.REGDATE_ASC) return 'ORDER BY r.reg_date ASC';
+  else if (order === ModelTypes.RoomOrder.ATTENDEE_DESC) return 'ORDER BY r.num_attendee DESC';
+  else if (order === ModelTypes.RoomOrder.ATTENDEE_ASC) return 'ORDER BY r.num_attendee ASC';
+  return '';
+};
 
 injectable(ModelModules.Room.Get,
   [ MysqlModules.Mysql ],

@@ -23,11 +23,18 @@ export namespace ModelTypes {
     list: RoomEntity[];
   };
 
+  export enum RoomOrder {
+    REGDATE_ASC = 'REGDATE_ASC',
+    REGDATE_DESC = 'REGDATE_DESC',
+    ATTENDEE_DESC = 'ATTENDEE_DESC',
+    ATTENDEE_ASC = 'ATTENDEE_ASC'
+  }
   export type RoomSearchQuery = {
     offset?: number;
     size?: number;
     keyword?: string;
     region?: string;
+    order?: RoomOrder;
   };
   export enum RoomOrder {
     CreatedDesc = 'CreatedDesc',
@@ -46,8 +53,6 @@ export namespace ModelTypes {
     export type UpdateToken = (roomNo: number, token: string) => Promise<void>;
     export type Destroy = (roomNo: number) => Promise<void>;
   }
-
-
   export type RoomMemberAddParam = {
     room_no: number;
     member_no: number;

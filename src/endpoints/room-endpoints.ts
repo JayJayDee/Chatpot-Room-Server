@@ -21,6 +21,7 @@ injectable(EndpointModules.Room.List,
           wrapAsync(async (req, res, next) => {
             const offsetExpr = req.query['offset'];
             const sizeExpr = req.query['size'];
+            const order = req.query['order'];
 
             let offset: number = null;
             let size: number = null;
@@ -34,7 +35,7 @@ injectable(EndpointModules.Room.List,
               throw new InvalidParamError('offset, size must be number');
             }
 
-            const rooms = await queryRooms({ offset, size });
+            const rooms = await queryRooms({ offset, size, order });
             res.status(200).json(rooms);
           })
         ]
