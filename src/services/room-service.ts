@@ -9,9 +9,9 @@ import { UtilModules, UtilTypes } from '../utils';
 import { LoggerModules, LoggerTypes } from '../loggers';
 import { RoomJoinError, RoomLeaveError } from './errors';
 
-const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
+const cvtMember = () =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
-    token: encrypt(fromMember.member_no),
+    token: fromMember.token,
     region: fromMember.region,
     language: fromMember.language,
     gender: fromMember.gender,
@@ -21,14 +21,12 @@ const cvtMember = (encrypt: UtilTypes.Auth.CreateMemberToken) =>
 
 injectable(ServiceModules.Room.List,
   [ ExtApiModules.AuthReq.MembersByNos,
-    ModelModules.Room.List,
-    UtilModules.Auth.CreateMemberToken ],
+    ModelModules.Room.List ],
   async (requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos,
-    getRooms: ModelTypes.Room.List,
-    encrypt: UtilTypes.Auth.CreateMemberToken): Promise<ServiceTypes.RoomService.List> =>
+    getRooms: ModelTypes.Room.List): Promise<ServiceTypes.RoomService.List> =>
 
     async (param) => {
-      const convert = cvtMember(encrypt);
+      const convert = cvtMember();
       const roomResp = await getRooms(param);
       const memberNos: number[] = roomResp.list.map((r) => r.owner_no);
       const members = await requestMembersViaApi(memberNos);
@@ -168,12 +166,10 @@ injectable(ServiceModules.Room.Leave,
 injectable(ServiceModules.Room.Get,
   [ ModelModules.Room.Get,
     ModelModules.RoomMember.Members,
-    ExtApiModules.AuthReq.MembersByNos,
-    UtilModules.Auth.CreateMemberToken ],
+    ExtApiModules.AuthReq.MembersByNos ],
   async (getRoom: ModelTypes.Room.Get,
     getMembers: ModelTypes.RoomMember.Members,
-    requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos,
-    createMemberToken: UtilTypes.Auth.CreateMemberToken): Promise<ServiceTypes.RoomService.Get> =>
+    requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos): Promise<ServiceTypes.RoomService.Get> =>
 
     async (roomNo: number) => {
       const room = await getRoom(roomNo);
@@ -182,7 +178,7 @@ injectable(ServiceModules.Room.Get,
       const membersFromDb = await getMembers(roomNo);
       const memberNos = membersFromDb.map((m) => m.member_no);
       const membersFromApi = await requestMembersViaApi(memberNos);
-      const convert = cvtMember(createMemberToken);
+      const convert = cvtMember();
 
       const roomDetail: ServiceTypes.RoomDetail = {
         room_token: room.token,

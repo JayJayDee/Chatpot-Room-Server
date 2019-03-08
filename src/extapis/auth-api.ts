@@ -17,7 +17,8 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
         qs: { member_nos: memberNos }
       });
       const members: ExtApiTypes.Member[] = apiResp.map((elem) => ({
-        member_no: elem.member_no, // TODO: must be changed to member_no
+        member_no: elem.member_no,
+        token: elem.token,
         region: elem.region,
         language: elem.language,
         gender: elem.gender,
