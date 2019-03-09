@@ -2,6 +2,7 @@ export namespace ModelModules {
   export enum Room {
     List = 'Model/Room/List',
     Get = 'Model/Room/Get',
+    GetMultiple = 'Model/Room/GetMultiple',
     Create = 'Model/Room/Create',
     UpdateToken = 'Model/Room/UpdateToken',
     Destroy = 'Model/Room/Destroy'
