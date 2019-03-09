@@ -79,6 +79,29 @@ injectable(ModelModules.Room.Get,
       return room;
     });
 
+injectable(ModelModules.Room.GetMultiple,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.GetMultiple> =>
+    async (roomNos) => {
+      if (roomNos.length === 0) return [];
+      const inClause = roomNos.join(',');
+      const sql = `
+        SELECT
+          r.token,
+          r.title
+        FROM
+          chatpot_room r
+        WHERE
+          r.no IN (${inClause})
+      `;
+      const rows: any[] = await mysql.query(sql) as any[];
+      const rooms: ModelTypes.RoomSimpleEntity[] = rows.map((r) => ({
+        title: r.title,
+        token: r.token
+      }));
+      return rooms;
+    });
+
 injectable(ModelModules.Room.Create,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Room.Create> =>

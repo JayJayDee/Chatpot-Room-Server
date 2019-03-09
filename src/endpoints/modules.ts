@@ -16,4 +16,8 @@ export namespace EndpointModules {
   export enum My {
     Rooms = 'Endpoint/My/Rooms'
   }
+
+  export enum Internal {
+    Rooms = 'Endpoint/Internal/Rooms'
+  }
 }

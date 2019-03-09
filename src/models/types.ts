@@ -8,6 +8,10 @@ export namespace ModelTypes {
     max_attendee: number;
     reg_date: Date
   };
+  export type RoomSimpleEntity = {
+    token: string;
+    title: string;
+  };
 
   export type RoomMemberEntity = {
     no: number;
@@ -49,6 +53,7 @@ export namespace ModelTypes {
   export namespace Room {
     export type List = (query: RoomSearchQuery, order?: RoomOrder) => Promise<RoomListEntity>;
     export type Get = (roomNo: number) => Promise<RoomEntity>;
+    export type GetMultiple = (roomNos: number[]) => Promise<RoomSimpleEntity[]>;
     export type Create = (param: RoomCreateParam) => Promise<number>;
     export type UpdateToken = (roomNo: number, token: string) => Promise<void>;
     export type Destroy = (roomNo: number) => Promise<void>;
