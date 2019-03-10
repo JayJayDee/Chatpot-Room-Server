@@ -33,4 +33,9 @@ export namespace ExtApiTypes {
   export namespace AuthReq {
     export type MembersByNos = (memberNos: number[]) => Promise<Member[]>;
   }
+
+  export namespace MessageReq {
+    export type EnterRoom = (memberToken: string, roomToken: string) => Promise<void>;
+    export type LeaveRoom = (memberToken: string, roomToken: string) => Promise<void>;
+  }
 }

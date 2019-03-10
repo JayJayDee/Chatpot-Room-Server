@@ -68,6 +68,7 @@ injectable(EndpointModules.Room.Create,
             const resp = await create({
               title,
               owner_no: decrypt(memberToken).member_no,
+              owner_token: memberToken,
               max_attendee: parseInt(maxAttendee)
             });
             res.status(200).json(resp);
@@ -102,7 +103,12 @@ injectable(EndpointModules.Room.Join,
             if (!member) throw new InvalidParamError('invalid member_token');
             if (!room) throw new InvalidParamError('invalid room_token');
 
-            await joinRoom(member.member_no, room.room_no);
+            await joinRoom({
+              member_no: member.member_no,
+              member_token: memberToken,
+              room_no: room.room_no,
+              room_token: roomToken
+            });
             res.status(200).json({});
           })
         ]
@@ -135,7 +141,12 @@ injectable(EndpointModules.Room.Leave,
             if (!member) throw new InvalidParamError('invalid member_token');
             if (!room) throw new InvalidParamError('invalid room_token');
 
-            await leaveFromRoom(member.member_no, room.room_no);
+            await leaveFromRoom({
+              member_no: member.member_no,
+              member_token: memberToken,
+              room_no: room.room_no,
+              room_token: roomToken
+            });
             res.status(200).json({});
           })
         ]

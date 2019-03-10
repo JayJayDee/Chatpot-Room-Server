@@ -33,6 +33,7 @@ export namespace ServiceTypes {
   }
 
   export type ReqRoomCreate = {
+    owner_token: string;
     owner_no: number;
     title: string;
     max_attendee: number;
@@ -46,11 +47,24 @@ export namespace ServiceTypes {
     join_date: Date;
   }
 
+  export type ReqRoomJoin = {
+    member_no: number;
+    member_token: string;
+    room_no: number;
+    room_token: string;
+  };
+  export type ReqRoomLeave = {
+    member_no: number;
+    member_token: string;
+    room_no: number;
+    room_token: string;
+  };
+
   export namespace RoomService {
     export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
-    export type Join = (memberNo: number, roomNo: number) => Promise<void>;
-    export type Leave = (memberNo: number, roomNo: number) => Promise<void>;
+    export type Join = (param: ReqRoomJoin) => Promise<void>;
+    export type Leave = (param: ReqRoomLeave) => Promise<void>;
     export type Get = (roomNo: number) => Promise<RoomDetail>;
   }
 

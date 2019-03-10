@@ -28,7 +28,8 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
     provider: null
   },
   extapi: {
-    authBaseUri: null
+    authBaseUri: null,
+    messageBaseUri: null
   }
 }));
 
@@ -51,7 +52,8 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'CACHE_REDIS_HOST', path: ['cache', 'redis', 'host'], defaultValue: null},
     { key: 'CACHE_REDIS_PORT', path: ['cache', 'redis', 'port'], defaultValue: null},
     { key: 'CACHE_REDIS_PASSWORD', path: ['cache', 'redis', 'password'], defaultValue: null},
-    { key: 'EXTAPI_AUTH_URI', path: ['extapi', 'authBaseUri'] }
+    { key: 'EXTAPI_AUTH_URI', path: ['extapi', 'authBaseUri'] },
+    { key: 'EXTAPI_MESSAGE_URI', path: ['extapi', 'messageBaseUri'] }
   ]));
 
 injectable(ConfigModules.ConfigSource,

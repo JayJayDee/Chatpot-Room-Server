@@ -58,13 +58,15 @@ injectable(ServiceModules.Room.Create,
     ModelModules.Room.UpdateToken,
     ModelModules.RoomMember.AddMember,
     UtilModules.Auth.CrateRoomToken,
-    ModelModules.History.Write ],
+    ModelModules.History.Write,
+    ExtApiModules.MessageReq.EnterRoom ],
   async (log: LoggerTypes.Logger,
     create: ModelTypes.Room.Create,
     updateToken: ModelTypes.Room.UpdateToken,
     addMember: ModelTypes.RoomMember.AddMember,
     createRoomToken: UtilTypes.Auth.CreateRoomToken,
-    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Create> =>
+    history: ModelTypes.History.Write,
+    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
       const createdRoomNo = await create(param);
@@ -92,6 +94,9 @@ injectable(ServiceModules.Room.Create,
         room_title: param.title
       });
 
+      // fcm subscribe
+      await enterDevTokensProcess(param.owner_token, token);
+
       return {
         room_token: token
       };
@@ -100,26 +105,33 @@ injectable(ServiceModules.Room.Create,
 injectable(ServiceModules.Room.Join,
   [ LoggerModules.Logger,
     ModelModules.RoomMember.AddMember,
-    ModelModules.History.Write ],
+    ModelModules.History.Write,
+    ExtApiModules.MessageReq.EnterRoom ],
   async (log: LoggerTypes.Logger,
     addMemberToRoom: ModelTypes.RoomMember.AddMember,
-    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Join> =>
+    history: ModelTypes.History.Write,
+    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.Join> =>
 
-      async (memberNo: number, roomNo: number) => {
+      async (param) => {
         const resp = await addMemberToRoom({
-          member_no: memberNo,
-          room_no: roomNo,
+          member_no: param.member_no,
+          room_no: param.room_no,
           is_owner: false
         });
         if (resp.success === false) {
           throw new RoomJoinError(resp.cause, 'failed to join room');
         }
-        log.debug(`[room-service] member:${memberNo} joined the room:${roomNo}`);
+        log.debug(`[room-service] member:${param.member_no} joined the room:${param.room_no}`);
+
         // TODO: add push-message sending routine.
+
+        // fcm subscribe
+        await enterDevTokensProcess(param.member_token, param.room_token);
+
         history({
           action: ModelTypes.HistoryAction.JOIN,
-          member_no: memberNo,
-          room_no: roomNo,
+          member_no: param.member_no,
+          room_no: param.room_no
         });
       });
 
@@ -127,18 +139,20 @@ injectable(ServiceModules.Room.Leave,
   [ LoggerModules.Logger,
     ModelModules.RoomMember.RemoveMember,
     ModelModules.Room.Destroy,
-    ModelModules.History.Write ],
+    ModelModules.History.Write,
+    ExtApiModules.MessageReq.LeaveRoom ],
   async (log: LoggerTypes.Logger,
     removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
     destroyRoom: ModelTypes.Room.Destroy,
-    history: ModelTypes.History.Write): Promise<ServiceTypes.RoomService.Leave> =>
+    history: ModelTypes.History.Write,
+    leaveDevTokensProcess: ExtApiTypes.MessageReq.LeaveRoom): Promise<ServiceTypes.RoomService.Leave> =>
 
-    async (memberNo: number, roomNo: number) => {
-      const resp = await removeMemberFromRoom(memberNo, roomNo);
+    async (param) => {
+      const resp = await removeMemberFromRoom(param.member_no, param.room_no);
       if (resp.success === false) {
         throw new RoomLeaveError(resp.cause, 'failed to leave room');
       }
-      log.debug(`[room-service] member:${memberNo} left the room:${roomNo}`);
+      log.debug(`[room-service] member:${param.member_no} left the room:${param.room_no}`);
 
       if (resp.newOwnerNo) {
         log.debug(`[room-service] member:${resp.newOwnerNo} elected as a new owner`);
@@ -147,18 +161,20 @@ injectable(ServiceModules.Room.Leave,
 
       await history({
         action: ModelTypes.HistoryAction.LEAVE,
-        member_no: memberNo,
-        room_no: roomNo,
+        member_no: param.member_no,
+        room_no: param.room_no
       });
 
+      await leaveDevTokensProcess(param.member_token, param.room_token);
+
       if (resp.destroyRequired === true) {
-        log.debug(`[room-service] room destroyed: ${roomNo}`);
+        log.debug(`[room-service] room destroyed: ${param.room_no}`);
         history({
           action: ModelTypes.HistoryAction.DESTROY,
-          member_no: memberNo,
-          room_no: roomNo,
+          member_no: param.member_no,
+          room_no: param.room_no,
         });
-        await destroyRoom(roomNo);
+        await destroyRoom(param.room_no);
       }
       // TODO: add push-message sending routine.
     });

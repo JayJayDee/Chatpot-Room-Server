@@ -9,6 +9,7 @@ const requestor =
       return await rp(param.uri, {
         method: param.method,
         body: param.body,
+        form: param.body,
         qs: param.qs,
         headers: param.headers,
         json: true
