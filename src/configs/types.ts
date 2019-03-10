@@ -35,6 +35,7 @@ export namespace ConfigTypes {
   };
   export type ExternalApiConfig = {
     authBaseUri: string;
+    messageBaseUri: string;
   };
   export enum CacheProvider {
     MEMORY = 'MEMORY', REDIS = 'REDIS'
