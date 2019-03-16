@@ -20,22 +20,29 @@ const convertMember = (token: UtilTypes.Auth.CreateMemberToken) =>
 injectable(ServiceModules.My.Rooms,
   [ ExtApiModules.AuthReq.MembersByNos,
     ModelModules.RoomMember.MyRooms,
-    UtilModules.Auth.CreateMemberToken ],
+    UtilModules.Auth.CreateMemberToken,
+    ExtApiModules.MessageReq.LastMessages ],
   async (requestMembers: ExtApiTypes.AuthReq.MembersByNos,
     queryMyRooms: ModelTypes.RoomMember.MyRooms,
-    token: UtilTypes.Auth.CreateMemberToken): Promise<ServiceTypes.MyService.Rooms> =>
+    token: UtilTypes.Auth.CreateMemberToken,
+    getLastMsgs: ExtApiTypes.MessageReq.LastMessages): Promise<ServiceTypes.MyService.Rooms> =>
 
       async (memberNo: number) => {
         const convert = convertMember(token);
         const myRooms = await queryMyRooms(memberNo);
         const owners = await requestMembers(myRooms.map((r) => r.owner_no));
-        const resp: ServiceTypes.Room[] = myRooms.map((r) => ({
+
+        const tokens: string[] = myRooms.map((r) => r.token);
+        const lastMsgs = await getLastMsgs(tokens);
+
+        const resp: ServiceTypes.MyRoom[] = myRooms.map((r) => ({
           room_token: r.token,
           owner: convert(find(owners, {member_no: r.owner_no})),
           title: r.title,
           num_attendee: r.num_attendee,
           max_attendee: r.max_attendee,
-          reg_date: r.reg_date
+          reg_date: r.reg_date,
+          last_message: lastMsgs[r.token]
         }));
         return resp;
       });

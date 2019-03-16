@@ -39,3 +39,23 @@ injectable(ExtApiModules.MessageReq.LeaveRoom,
         }
       });
     });
+
+
+injectable(ExtApiModules.MessageReq.LastMessages,
+  [ ExtApiModules.Requestor,
+    ConfigModules.ExternalApiConfig ],
+  async (request: ExtApiTypes.Request,
+    cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.LastMessages> =>
+
+    async (roomTokens) => {
+      if (roomTokens.length === 0) return {};
+      const uri = `${cfg.messageBaseUri}/internal/lasts`;
+      const resps = await request({
+        uri,
+        method: ExtApiTypes.RequestMethod.GET,
+        qs: {
+          room_tokens: roomTokens
+        }
+      });
+      return resps;
+    });
