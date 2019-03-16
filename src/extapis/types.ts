@@ -34,8 +34,31 @@ export namespace ExtApiTypes {
     export type MembersByNos = (memberNos: number[]) => Promise<Member[]>;
   }
 
+  export enum MessageType {
+    NOTIFICATION = 'NOTIFICATION',
+    TEXT = 'TEXT',
+    IMAGE = 'IMAGE'
+  }
+  export type Reception = {
+    type: ReceptionType;
+    token: string;
+  };
+  export enum ReceptionType {
+    ROOM = 'ROOM'
+  }
+  export type Message = {
+    message_id: string;
+    type: MessageType;
+    from: Member;
+    to: Reception;
+    content: any;
+    sent_time: number;
+  };
+  export type LastMessageRes = {[token: string]: Message};
+
   export namespace MessageReq {
     export type EnterRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LeaveRoom = (memberToken: string, roomToken: string) => Promise<void>;
+    export type LastMessages = (roomTokens: string[]) => Promise<LastMessageRes>;
   }
 }

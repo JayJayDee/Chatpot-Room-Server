@@ -22,6 +22,29 @@ export namespace ServiceTypes {
     max_attendee: number;
     reg_date: Date;
   };
+  export enum MessageType {
+    NOTIFICATION = 'NOTIFICATION',
+    TEXT = 'TEXT',
+    IMAGE = 'IMAGE'
+  }
+  export type Reception = {
+    type: ReceptionType;
+    token: string;
+  };
+  export enum ReceptionType {
+    ROOM = 'ROOM'
+  }
+  export type Message = {
+    message_id: string;
+    type: MessageType;
+    from: Member;
+    to: Reception;
+    content: any;
+    sent_time: number;
+  };
+  export interface MyRoom extends Room {
+    last_message: Message;
+  }
   export type RoomList = {
     all: number;
     size: number;
@@ -69,6 +92,6 @@ export namespace ServiceTypes {
   }
 
   export namespace MyService {
-    export type Rooms = (memberNo: number) => Promise<Room[]>;
+    export type Rooms = (memberNo: number) => Promise<MyRoom[]>;
   }
 }
