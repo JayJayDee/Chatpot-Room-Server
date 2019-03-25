@@ -14,5 +14,6 @@ export namespace MysqlTypes {
   export interface MysqlDriver {
     query: (sql: string, params?: any[]) => Promise<Row[] | ExecutionResult>;
     transaction: (executor: MysqlTransactionExecutor) => Promise<any>;
+    escape: (paramExpression: string) => string;
   }
 }

@@ -13,6 +13,10 @@ injectable(ModelModules.Room.List,
         let size: number = param.size ? param.size : 10;
         let order: ModelTypes.RoomOrder = param.order ? param.order : ModelTypes.RoomOrder.REGDATE_DESC;
 
+        const prepare = prepareOptionalSearchQueries(mysql);
+        const where = prepare({ keyword: param.keyword, region: param.region });
+        console.log(where);
+
         const query = `
           SELECT
             SQL_CALC_FOUND_ROWS
@@ -23,11 +27,12 @@ injectable(ModelModules.Room.List,
           INNER JOIN
             chatpot_room_has_member AS rhm ON
               rhm.room_no=r.no AND rhm.is_owner=1
+          ${where.whereClause}
           ${getOrderQuery(order)}
           LIMIT
             ?,?
         `;
-        const params = [ offset, size ];
+        const params = [ ...where.params, offset, size ];
         const rows: any[] = await mysql.query(query, params) as any[];
         const foundRows: any[] = await mysql.query('SELECT FOUND_ROWS() AS rs') as any[];
 
@@ -48,6 +53,36 @@ const getOrderQuery = (order: ModelTypes.RoomOrder): string => {
   else if (order === ModelTypes.RoomOrder.ATTENDEE_ASC) return 'ORDER BY r.num_attendee ASC';
   return '';
 };
+
+
+type OptionalSearchQuery = {
+  keyword?: string;
+  region?: string;
+};
+type OptionalQueryParams = {
+  whereClause: string;
+  params: any[];
+};
+
+const prepareOptionalSearchQueries = (driver: MysqlTypes.MysqlDriver) =>
+  (opts: OptionalSearchQuery): OptionalQueryParams => {
+    const res: OptionalQueryParams = {
+      whereClause: '',
+      params: []
+    };
+    const clauseBlocks = [];
+    if (opts.keyword) {
+      // const escaped = driver.escape(opts.keyword);
+      clauseBlocks.push(`r.title LIKE '%${opts.keyword}%'`);
+    }
+    if (opts.region) {
+      res.params.push(opts.region);
+      clauseBlocks.push('m.region=?');
+    }
+    const where = clauseBlocks.length > 0 ? ' WHERE ' : '';
+    res.whereClause = `${where} ${clauseBlocks.join(' AND ')}`;
+    return res;
+  };
 
 injectable(ModelModules.Room.Get,
   [ MysqlModules.Mysql ],
