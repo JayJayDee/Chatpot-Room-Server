@@ -1,4 +1,4 @@
-import { createPool, Pool, PoolConnection } from 'mysql';
+import { createPool, Pool, PoolConnection, escape } from 'mysql';
 import { ConfigTypes, ConfigModules } from '../configs';
 import { LoggerTypes, LoggerModules } from '../loggers';
 import { MysqlTypes } from './types';
@@ -101,6 +101,10 @@ export const buildMySQLDriver =
             });
           });
         });
+      },
+
+      escape(expression) {
+        return escape(expression);
       }
     });
 
