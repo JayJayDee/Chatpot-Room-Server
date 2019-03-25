@@ -6,6 +6,7 @@ import { InvalidParamError } from '../errors';
 import { UtilModules } from '../utils/modules';
 import { UtilTypes } from '../utils/types';
 import { MiddlewareModules, MiddlewareTypes } from '../middlewares';
+import { ModelTypes } from '../models';
 
 injectable(EndpointModules.Room.List,
   [ EndpointModules.Utils.WrapAync,
@@ -183,15 +184,27 @@ injectable(EndpointModules.Room.Get,
 
 
 injectable(EndpointModules.Room.Featured,
-  [ EndpointModules.Utils.WrapAync ],
-  async (wrapAsync: EndpointTypes.Utils.WrapAsync) =>
+  [ EndpointModules.Utils.WrapAync,
+    ServiceModules.Room.List ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    queryRooms: ServiceTypes.RoomService.List) =>
 
     ({
       uri: '/rooms/featured',
       method: EndpointTypes.EndpointMethod.GET,
       handler: [
         wrapAsync(async (req, res, next) => {
-          res.status(200).json({});
+          const recent = (await queryRooms({
+            offset: 0,
+            size: 5
+          }, ModelTypes.RoomOrder.REGDATE_DESC)).list;
+
+          const crowded = (await queryRooms({
+            offset: 0,
+            size: 5
+          }, ModelTypes.RoomOrder.ATTENDEE_ASC)).list;
+
+          res.status(200).json({ recent, crowded });
         })
       ]
     }));
