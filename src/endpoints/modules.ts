@@ -8,6 +8,7 @@ export namespace EndpointModules {
   export enum Room {
     Create = 'Endpoint/Room/Create',
     List = 'Endpoint/Room/List',
+    Featured = 'Endpoint/Room/List/Featured',
     Join = 'Endpoint/Room/Join',
     Leave = 'Endpoint/Room/Leave',
     Get = 'Endpoint/Room/Get'

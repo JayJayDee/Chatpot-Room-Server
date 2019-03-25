@@ -180,3 +180,18 @@ injectable(EndpointModules.Room.Get,
         })
       ]
     }));
+
+
+injectable(EndpointModules.Room.Featured,
+  [ EndpointModules.Utils.WrapAync ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync) =>
+
+    ({
+      uri: '/rooms/featured',
+      method: EndpointTypes.EndpointMethod.GET,
+      handler: [
+        wrapAsync(async (req, res, next) => {
+          res.status(200).json({});
+        })
+      ]
+    }));
