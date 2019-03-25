@@ -15,7 +15,6 @@ injectable(ModelModules.Room.List,
 
         const prepare = prepareOptionalSearchQueries(mysql);
         const where = prepare({ keyword: param.keyword, region: param.region });
-        console.log(where);
 
         const query = `
           SELECT
