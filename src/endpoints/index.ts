@@ -9,6 +9,7 @@ export { EndpointModules } from './modules';
 injectable(EndpointModules.Endpoints,
   [EndpointModules.Room.Create,
     EndpointModules.Room.List,
+    EndpointModules.Room.Featured,
     EndpointModules.Room.Join,
     EndpointModules.Room.Leave,
     EndpointModules.My.Rooms,
@@ -17,6 +18,7 @@ injectable(EndpointModules.Endpoints,
 
   async (create: EndpointTypes.Endpoint,
     list: EndpointTypes.Endpoint,
+    featured: EndpointTypes.Endpoint,
     join: EndpointTypes.Endpoint,
     leave: EndpointTypes.Endpoint,
     myRooms: EndpointTypes.Endpoint,
@@ -24,5 +26,5 @@ injectable(EndpointModules.Endpoints,
     internalRooms: EndpointTypes.Endpoint) =>
 
     ([
-      create, list, join, leave, myRooms, get, internalRooms
+      create, list, featured, join, leave, myRooms, get, internalRooms
     ]));
