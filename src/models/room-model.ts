@@ -71,8 +71,8 @@ const prepareOptionalSearchQueries = (driver: MysqlTypes.MysqlDriver) =>
     };
     const clauseBlocks = [];
     if (opts.keyword) {
-      // const escaped = driver.escape(opts.keyword);
-      clauseBlocks.push(`r.title LIKE '%${opts.keyword}%'`);
+      res.params.push('%' + opts.keyword + '%');
+      clauseBlocks.push(`r.title LIKE ?`);
     }
     if (opts.region) {
       res.params.push(opts.region);
