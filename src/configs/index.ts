@@ -23,13 +23,16 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
     authSecret: null,
     roomSecret: null
   },
-  cache: {
-    enabled: null,
-    provider: null
-  },
   extapi: {
     authBaseUri: null,
     messageBaseUri: null
+  },
+  kvStorage: {
+    provider: null,
+    redis: null
+  },
+  cache: {
+    enabled: null
   }
 }));
 
@@ -47,13 +50,13 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'CREDENTIAL_AUTH_SECRET', path: ['credential', 'authSecret'] },
     { key: 'CREDENTIAL_AUTH_SESSION_EXPIRES', path: ['credential', 'sessionExpires'], defaultValue: 60 },
     { key: 'CREDENTIAL_ROOM_SECRET', path: ['credential', 'roomSecret'] },
-    { key: 'CACHE_ENABLED', path: ['cache', 'enabled'], defaultValue: false},
-    { key: 'CACHE_PROVIDER', path: ['cache', 'provider'], defaultValue: 'MEMORY'},
-    { key: 'CACHE_REDIS_HOST', path: ['cache', 'redis', 'host'], defaultValue: null},
-    { key: 'CACHE_REDIS_PORT', path: ['cache', 'redis', 'port'], defaultValue: null},
-    { key: 'CACHE_REDIS_PASSWORD', path: ['cache', 'redis', 'password'], defaultValue: null},
     { key: 'EXTAPI_AUTH_URI', path: ['extapi', 'authBaseUri'] },
-    { key: 'EXTAPI_MESSAGE_URI', path: ['extapi', 'messageBaseUri'] }
+    { key: 'EXTAPI_MESSAGE_URI', path: ['extapi', 'messageBaseUri'] },
+    { key: 'KV_STORAGE_PROVIDER', path: ['kvStorage', 'provider'], defaultValue: 'MEMORY' },
+    { key: 'KV_STORAGE_REDIS_HOST', path: ['kvStorage', 'redis', 'host'], defaultValue: null },
+    { key: 'KV_STORAGE_REDIS_PORT', path: ['kvStorage', 'redis', 'port'], defaultValue: null },
+    { key: 'KV_STORAGE_REDIS_PASSWORD', path: ['kvStorage', 'redis', 'password'], defaultValue: null },
+    { key: 'CACHE_ENABLED', path: ['cache', 'enabled'], defaultValue: false }
   ]));
 
 injectable(ConfigModules.ConfigSource,
@@ -80,13 +83,17 @@ injectable(ConfigModules.CredentialConfig,
   [ConfigModules.RootConfig],
   async (root: ConfigTypes.RootConfig) => root.credential);
 
-injectable(ConfigModules.CacheConfig,
-  [ConfigModules.RootConfig],
-  async (root: ConfigTypes.RootConfig) => root.cache);
-
 injectable(ConfigModules.ExternalApiConfig,
   [ConfigModules.RootConfig],
   async (root: ConfigTypes.RootConfig) => root.extapi);
+
+injectable(ConfigModules.KeyValueStorageConfig,
+  [ConfigModules.RootConfig],
+  async (root: ConfigTypes.RootConfig) => root.kvStorage);
+
+injectable(ConfigModules.CacheConfig,
+  [ConfigModules.RootConfig],
+  async (root: ConfigTypes.RootConfig) => root.cache);
 
 injectable(ConfigModules.Env,
   [ConfigModules.ConfigSource],

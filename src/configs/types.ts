@@ -2,9 +2,10 @@ export namespace ConfigTypes {
   export type RootConfig = {
     http: HttpConfig;
     mysql: MysqlConfig;
-    cache: CacheConfig;
     credential: CredentialConfig;
     extapi: ExternalApiConfig;
+    cache: CacheConfig;
+    kvStorage: KeyValueStorageConfig;
   };
   export type HttpConfig = {
     port: number;
@@ -23,10 +24,12 @@ export namespace ConfigTypes {
     authSecret: string;
     roomSecret: string;
   };
-  export type CacheConfig = {
-    enabled: boolean;
+  export type KeyValueStorageConfig = {
     provider: CacheProvider;
     redis?: RedisConfig;
+  };
+  export type CacheConfig = {
+    enabled: boolean;
   };
   export type RedisConfig = {
     host: string;
