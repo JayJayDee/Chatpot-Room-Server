@@ -51,7 +51,7 @@ export namespace ModelTypes {
   };
 
   export namespace Room {
-    export type List = (query: RoomSearchQuery, order?: RoomOrder) => Promise<RoomListEntity>;
+    export type List = (query: RoomSearchQuery) => Promise<RoomListEntity>;
     export type Get = (roomNo: number) => Promise<RoomEntity>;
     export type GetMultiple = (roomNos: number[]) => Promise<RoomSimpleEntity[]>;
     export type Create = (param: RoomCreateParam) => Promise<number>;

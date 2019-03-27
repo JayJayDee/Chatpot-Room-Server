@@ -25,8 +25,9 @@ injectable(ServiceModules.Room.List,
   async (requestMembersViaApi: ExtApiTypes.AuthReq.MembersByNos,
     getRooms: ModelTypes.Room.List): Promise<ServiceTypes.RoomService.List> =>
 
-    async (param) => {
+    async (param, order) => {
       const convert = cvtMember();
+      param.order = order;
       const roomResp = await getRooms(param);
       const memberNos: number[] = roomResp.list.map((r) => r.owner_no);
       const members = await requestMembersViaApi(memberNos);
