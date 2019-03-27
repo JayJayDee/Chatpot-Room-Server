@@ -202,7 +202,7 @@ injectable(EndpointModules.Room.Featured,
           const crowded = (await queryRooms({
             offset: 0,
             size: 5
-          }, ModelTypes.RoomOrder.ATTENDEE_ASC)).list;
+          }, ModelTypes.RoomOrder.ATTENDEE_DESC)).list;
 
           res.status(200).json({ recent, crowded });
         })
