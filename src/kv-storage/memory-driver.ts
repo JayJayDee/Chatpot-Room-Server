@@ -64,7 +64,7 @@ const memorySet =
       storage[key] = value;
       delete expset[key];
       if (expires) {
-        expset[key] = Date.now() + expires;
+        expset[key] = Date.now() + (expires * 1000);
       }
     };
 

@@ -21,14 +21,13 @@ injectable(CacheModules.CachedOperation,
         return await executor();
       }
       let resp: T = await kvGet(key);
-      console.log(resp);
       if (resp) {
-        log.debug(`[cache-ops] cache hit: ${key}`);
+        log.debug(`[cache-ops] cache hit, key:${key}`);
         return resp;
       }
 
       resp = await executor();
-      log.debug(`[cache-ops] cache not hit, storing..: ${key}`);
+      log.debug(`[cache-ops] cache not hit, stored to key:${key}`);
       await kvSet(key, resp, 30);
       return resp;
     });
