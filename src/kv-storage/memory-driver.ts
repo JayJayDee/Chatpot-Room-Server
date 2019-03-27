@@ -41,7 +41,7 @@ const memoryGetLasts =
 const memoryGet =
   (storage: Storage, expset: ExpireSet): KeyValueStorageTypes.Get =>
     async (key: string) => {
-      const value = storage.get(key);
+      const value = storage[key];
       if (!value) return null;
       if (isExpires(expset, key) === true) {
         delete storage[key];
