@@ -3,20 +3,31 @@ import { CacheModules } from './modules';
 import { KeyValueStorageModules, KeyValueStorageTypes } from '../kv-storage';
 import { CacheTypes } from './types';
 import { ConfigModules, ConfigTypes } from '../configs';
+import { LoggerModules, LoggerTypes } from '../loggers';
 
 injectable(CacheModules.CachedOperation,
-  [ ConfigModules.CacheConfig,
+  [ LoggerModules.Logger,
+    ConfigModules.CacheConfig,
     KeyValueStorageModules.Get,
     KeyValueStorageModules.Set ],
-  async <T>(cfg: ConfigTypes.CacheConfig,
+  async <T>(log: LoggerTypes.Logger,
+    cfg: ConfigTypes.CacheConfig,
     kvGet: KeyValueStorageTypes.Get,
     kvSet: KeyValueStorageTypes.Set): Promise<CacheTypes.CachedOperation<T>> =>
 
     async <T>(key: string, executor: () => Promise<T>) => {
       if (cfg.enabled === false) {
+        log.debug('[cache-ops] cache disabled');
         return await executor();
       }
-      const a: T = null;
-      // TODO: do cached operations.
-      return a;
+      let resp: T = await kvGet(key);
+      if (resp) {
+        log.debug(`[cache-ops] cache hit, key:${key}`);
+        return resp;
+      }
+
+      resp = await executor();
+      log.debug(`[cache-ops] cache not hit, stored to key:${key}`);
+      await kvSet(key, resp, 30);
+      return resp;
     });
