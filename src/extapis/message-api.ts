@@ -59,3 +59,14 @@ injectable(ExtApiModules.MessageReq.LastMessages,
       });
       return resps;
     });
+
+
+injectable(ExtApiModules.MessageReq.PublishMessage,
+  [ ExtApiModules.Requestor,
+    ConfigModules.ExternalApiConfig ],
+  async (request: ExtApiTypes.Request,
+    cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.PublishMessage> =>
+
+    async (roomToken, message) => {
+      // TODO: message publish api call routine to be implemented.
+    });

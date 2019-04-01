@@ -60,5 +60,6 @@ export namespace ExtApiTypes {
     export type EnterRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LeaveRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LastMessages = (roomTokens: string[]) => Promise<LastMessageRes>;
+    export type PublishMessage = (roomToken: string, message: Message) => Promise<void>;
   }
 }
