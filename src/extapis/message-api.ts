@@ -68,7 +68,7 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
     cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.PublishNotification> =>
 
     async (roomToken, notification) => {
-      const uri = `${cfg.messageBaseUri}/internal/notification`;
+      const uri = `${cfg.messageBaseUri}/internal/room/${roomToken}/notification`;
       const content = {
         member: notification.member,
         room_token: roomToken
@@ -80,7 +80,7 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
           content: JSON.stringify(content),
           room_token: roomToken,
           title: notification.messageType,
-          subtitle: ''
+          subtitle: ' '
         }
       });
     });
