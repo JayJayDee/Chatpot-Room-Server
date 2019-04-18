@@ -58,6 +58,7 @@ export namespace ExtApiTypes {
 
   type NotificationMessage = {
     messageType: MessageType;
+    roomTitle: string;
     action: 'JOIN_ROOM' | 'LEAVE_ROOM';
     member: Member;
   };

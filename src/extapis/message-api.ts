@@ -68,5 +68,19 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
     cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.PublishNotification> =>
 
     async (roomToken, notification) => {
-      // TODO: message publish api call routine to be implemented.
+      const uri = `${cfg.messageBaseUri}/internal/notification`;
+      const content = {
+        member: notification.member,
+        room_token: roomToken
+      };
+      await request({
+        uri,
+        method: ExtApiTypes.RequestMethod.POST,
+        body: {
+          content: JSON.stringify(content),
+          room_token: roomToken,
+          title: notification.messageType,
+          subtitle: ''
+        }
+      });
     });
