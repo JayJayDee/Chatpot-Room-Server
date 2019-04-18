@@ -56,10 +56,16 @@ export namespace ExtApiTypes {
   };
   export type LastMessageRes = {[token: string]: Message};
 
+  type NotificationMessage = {
+    messageType: MessageType;
+    action: 'JOIN_ROOM' | 'LEAVE_ROOM';
+    member: Member;
+  };
+
   export namespace MessageReq {
     export type EnterRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LeaveRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LastMessages = (roomTokens: string[]) => Promise<LastMessageRes>;
-    export type PublishMessage = (roomToken: string, message: Message) => Promise<void>;
+    export type PublishNotification = (roomToken: string, notification: NotificationMessage) => Promise<void>;
   }
 }
