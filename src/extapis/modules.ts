@@ -7,6 +7,7 @@ export namespace ExtApiModules {
   export enum MessageReq {
     EnterRoom = 'ExtApi/Message/EnterRoom',
     LeaveRoom = 'ExtApi/Message/LeaveRoom',
-    LastMessages = 'ExtApi/Message/LastMessages'
+    LastMessages = 'ExtApi/Message/LastMessages',
+    PublishNotification = 'ExtApi/Message/PublishNotification'
   }
 }

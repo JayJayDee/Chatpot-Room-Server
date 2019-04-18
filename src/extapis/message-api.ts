@@ -59,3 +59,28 @@ injectable(ExtApiModules.MessageReq.LastMessages,
       });
       return resps;
     });
+
+
+injectable(ExtApiModules.MessageReq.PublishNotification,
+  [ ExtApiModules.Requestor,
+    ConfigModules.ExternalApiConfig ],
+  async (request: ExtApiTypes.Request,
+    cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.PublishNotification> =>
+
+    async (roomToken, notification) => {
+      const uri = `${cfg.messageBaseUri}/internal/notification`;
+      const content = {
+        member: notification.member,
+        room_token: roomToken
+      };
+      await request({
+        uri,
+        method: ExtApiTypes.RequestMethod.POST,
+        body: {
+          content: JSON.stringify(content),
+          room_token: roomToken,
+          title: notification.messageType,
+          subtitle: ''
+        }
+      });
+    });

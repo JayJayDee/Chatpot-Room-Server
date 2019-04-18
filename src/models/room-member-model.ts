@@ -37,7 +37,8 @@ injectable(ModelModules.RoomMember.AddMember,
       await mysql.transaction(async (executor) => {
         const resp: ModelTypes.RoomMemberAddRes = {
           success: false,
-          cause: null
+          cause: null,
+          room_title: null
         };
         const isOwner: number = param.is_owner === true ? 1 : 0;
         const sql = `
@@ -62,7 +63,8 @@ injectable(ModelModules.RoomMember.AddMember,
               FROM chatpot_room_has_member
               WHERE room_no=? AND member_no=?) AS member_cnt,
             r.num_attendee,
-            r.max_attendee
+            r.max_attendee,
+            r.title
           FROM
             chatpot_room r
           WHERE
@@ -82,6 +84,7 @@ injectable(ModelModules.RoomMember.AddMember,
         const memberCnt: number = rows[0].member_cnt;
         const numAttendee: number = rows[0].num_attendee;
         const maxAttendee: number = rows[0].max_attendee;
+        const roomTitle: string = rows[0].title;
 
         let cause = null;
         if (memberCnt === 0) cause = 'ROOM_JOIN_FAILURE';
@@ -94,6 +97,7 @@ injectable(ModelModules.RoomMember.AddMember,
           resp.cause = cause;
           return resp;
         }
+        resp.room_title = roomTitle;
         resp.success = true;
         return resp;
       }

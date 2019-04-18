@@ -65,6 +65,7 @@ export namespace ModelTypes {
   };
   export type RoomMemberAddRes = {
     success: boolean;
+    room_title: string;
     cause: string | null;
   };
   export type RoomMemberRemoveRes = {

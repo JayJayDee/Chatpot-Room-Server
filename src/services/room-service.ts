@@ -107,11 +107,15 @@ injectable(ServiceModules.Room.Join,
   [ LoggerModules.Logger,
     ModelModules.RoomMember.AddMember,
     ModelModules.History.Write,
-    ExtApiModules.MessageReq.EnterRoom ],
+    ExtApiModules.MessageReq.EnterRoom,
+    ExtApiModules.MessageReq.PublishNotification,
+    ExtApiModules.AuthReq.MembersByNos ],
   async (log: LoggerTypes.Logger,
     addMemberToRoom: ModelTypes.RoomMember.AddMember,
     history: ModelTypes.History.Write,
-    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.Join> =>
+    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom,
+    publishNotification: ExtApiTypes.MessageReq.PublishNotification,
+    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<ServiceTypes.RoomService.Join> =>
 
       async (param) => {
         const resp = await addMemberToRoom({
@@ -124,7 +128,18 @@ injectable(ServiceModules.Room.Join,
         }
         log.debug(`[room-service] member:${param.member_no} joined the room:${param.room_no}`);
 
-        // TODO: add push-message sending routine.
+        const members = await getMembersByNos([ param.member_no ]);
+        if (members.length === 0) {
+          throw new RoomJoinError('MEMBER_NOT_FOUND', `member with token:${param.room_token} not found`);
+        }
+
+        // publish join notification to room
+        await publishNotification(param.room_token, {
+          messageType: ExtApiTypes.MessageType.NOTIFICATION,
+          action: 'JOIN_ROOM',
+          member: members[0],
+          roomTitle: resp.room_title
+        });
 
         // fcm subscribe
         await enterDevTokensProcess(param.member_token, param.room_token);
