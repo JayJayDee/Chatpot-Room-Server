@@ -135,6 +135,7 @@ injectable(ModelModules.RoomMember.RemoveMember,
       await mysql.transaction(async (executor) => {
         const ret: ModelTypes.RoomMemberRemoveRes = {
           success: false,
+          roomTitle: null,
           destroyRequired: false,
           newOwnerNo: null,
           cause: null
@@ -170,15 +171,18 @@ injectable(ModelModules.RoomMember.RemoveMember,
         }
 
         const numAteendeeSql = `
-          SELECT num_attendee
-            FROM chatpot_room
-              WHERE no=?
+          SELECT
+            num_attendee,
+            title
+          FROM
+            chatpot_room
+          WHERE no=?
         `;
         const rows: any[] = await executor.query(numAteendeeSql, [ roomNo ]) as any[];
         if (rows[0].num_attendee === 0) {
           ret.destroyRequired = true;
         }
-
+        resp.roomTitle = rows[0].title;
         if (ret.destroyRequired === false) {
           const elect = electNewOwner(executor);
           ret.newOwnerNo = await elect(roomNo);
