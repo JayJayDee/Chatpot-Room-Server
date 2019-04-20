@@ -130,7 +130,7 @@ injectable(ServiceModules.Room.Join,
 
         const members = await getMembersByNos([ param.member_no ]);
         if (members.length === 0) {
-          throw new RoomJoinError('MEMBER_NOT_FOUND', `member with token:${param.room_token} not found`);
+          throw new RoomJoinError('MEMBER_NOT_FOUND', `member with token:${param.member_token} not found`);
         }
 
         // publish join notification to room
@@ -156,17 +156,26 @@ injectable(ServiceModules.Room.Leave,
     ModelModules.RoomMember.RemoveMember,
     ModelModules.Room.Destroy,
     ModelModules.History.Write,
-    ExtApiModules.MessageReq.LeaveRoom ],
+    ExtApiModules.MessageReq.LeaveRoom,
+    ExtApiModules.MessageReq.PublishNotification,
+    ExtApiModules.AuthReq.MembersByNos ],
   async (log: LoggerTypes.Logger,
     removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
     destroyRoom: ModelTypes.Room.Destroy,
     history: ModelTypes.History.Write,
-    leaveDevTokensProcess: ExtApiTypes.MessageReq.LeaveRoom): Promise<ServiceTypes.RoomService.Leave> =>
+    leaveDevTokensProcess: ExtApiTypes.MessageReq.LeaveRoom,
+    publishNotification: ExtApiTypes.MessageReq.PublishNotification,
+    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<ServiceTypes.RoomService.Leave> =>
 
     async (param) => {
       const resp = await removeMemberFromRoom(param.member_no, param.room_no);
       if (resp.success === false) {
         throw new RoomLeaveError(resp.cause, 'failed to leave room');
+      }
+
+      const members = await getMembersByNos([ param.member_no ]);
+      if (members.length === 0) {
+        throw new RoomLeaveError('MEMBER_NOT_FOUND', `member with token:${param.member_token} not found`);
       }
       log.debug(`[room-service] member:${param.member_no} left the room:${param.room_no}`);
 
@@ -192,7 +201,17 @@ injectable(ServiceModules.Room.Leave,
         });
         await destroyRoom(param.room_no);
       }
-      // TODO: add push-message sending routine.
+
+      // normal leave.
+      if (resp.destroyRequired === false) {
+        // send leave notification to room
+        await publishNotification(param.room_token, {
+          messageType: ExtApiTypes.MessageType.NOTIFICATION,
+          action: 'LEAVE_ROOM',
+          member: members[0],
+          roomTitle: resp.roomTitle
+        });
+      }
     });
 
 injectable(ServiceModules.Room.Get,
