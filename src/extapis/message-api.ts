@@ -2,6 +2,7 @@ import { injectable } from 'smart-factory';
 import { ExtApiModules } from './modules';
 import { ExtApiTypes } from './types';
 import { ConfigModules, ConfigTypes } from '../configs';
+import { LoggerModules, LoggerTypes } from '../loggers';
 
 injectable(ExtApiModules.MessageReq.EnterRoom,
   [ ExtApiModules.Requestor,
@@ -63,9 +64,11 @@ injectable(ExtApiModules.MessageReq.LastMessages,
 
 injectable(ExtApiModules.MessageReq.PublishNotification,
   [ ExtApiModules.Requestor,
-    ConfigModules.ExternalApiConfig ],
+    ConfigModules.ExternalApiConfig,
+    LoggerModules.Logger ],
   async (request: ExtApiTypes.Request,
-    cfg: ConfigTypes.ExternalApiConfig): Promise<ExtApiTypes.MessageReq.PublishNotification> =>
+    cfg: ConfigTypes.ExternalApiConfig,
+    log: LoggerTypes.Logger): Promise<ExtApiTypes.MessageReq.PublishNotification> =>
 
     async (roomToken, notification) => {
       const uri = `${cfg.messageBaseUri}/internal/room/${roomToken}/notification`;
@@ -74,14 +77,20 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
         member: notification.member,
         room_token: roomToken
       };
+
+      const body = {
+        content: JSON.stringify(content),
+        room_token: roomToken,
+        title_key: notification.action,
+        subtitle: notification.roomTitle
+      };
+
+      log.debug(`[extapi-message] ${uri}, body-payload`);
+      log.debug(body);
+
       await request({
         uri,
         method: ExtApiTypes.RequestMethod.POST,
-        body: {
-          content: JSON.stringify(content),
-          room_token: roomToken,
-          title_key: notification.action,
-          subtitle: notification.roomTitle
-        }
+        body
       });
     });
