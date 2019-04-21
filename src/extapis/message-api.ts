@@ -80,8 +80,8 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
         body: {
           content: JSON.stringify(content),
           room_token: roomToken,
-          title: notification.action,
-          subtitle: ' '
+          title_key: notification.action,
+          subtitle: notification.roomTitle
         }
       });
     });
