@@ -182,12 +182,13 @@ injectable(ModelModules.RoomMember.RemoveMember,
         if (rows[0].num_attendee === 0) {
           ret.destroyRequired = true;
         }
-        resp.roomTitle = rows[0].title;
+
         if (ret.destroyRequired === false) {
           const elect = electNewOwner(executor);
           ret.newOwnerNo = await elect(roomNo);
         }
 
+        ret.roomTitle = rows[0].title;
         ret.success = true;
         return ret;
       }));
