@@ -40,3 +40,110 @@ tags:
         type: array
         items:
           $ref: '#/definitions/Room'
+
+/rooms/featured:
+  get:
+    summary: 여러 주제로 묶인 공개 채팅방들을 반환
+    tags: [Room]
+    responses:
+      200:
+        description: 성공
+        type: object
+        properties:
+          recent:
+            description: 최근 채팅방들
+            type: array
+            items:
+              $ref: '#/definitions/Room'
+          crowded:
+            description: 사람이 많은 채팅방들
+            type: array
+            items:
+              $ref: '#/definitions/Room'
+
+/room:
+  post:
+    summary: 새로운 채팅방 개설. 개설자는 자동으로 참여한 상태가 됨
+    tags: [Room]
+    parameters:
+      - name: member_token
+        in: formData
+        required: true
+        type: string
+        description: 회원 token
+      - name: max_attendee
+        in: formData
+        required: true
+        type: number
+        description: 최대 참여자 수
+      - name: title
+        in: formData
+        required: true
+        type: string
+        description: 채팅방의 제목
+    responses:
+      200:
+        description: 성공
+        type: object
+        properties:
+          room_token:
+            type: string
+            description: 새롭게 생성된 방의 token
+
+/room/{room_token}/join:
+  post:
+    summary: 채팅방에 참여.
+    tags: [Room]
+    parameters:
+      - name: member_token
+        in: formData
+        required: true
+        type: string
+        description: 회원 token
+      - name: room_token
+        in: path
+        required: true
+        type: string
+        description: 채팅방 token
+    responses:
+      200:
+        description: 성공
+        schema:
+          $ref: '#/definitions/Ok'
+
+/room/{room_token}/leave:
+  post:
+    summary: 채팅방에서 탈퇴
+    tags: [Room]
+    parameters:
+      - name: member_token
+        in: formData
+        required: true
+        type: string
+        description: 회원 token
+      - name: room_token
+        in: path
+        required: true
+        type: string
+        description: 채팅방 token
+    responses:
+      200:
+        description: 성공
+        schema:
+          $ref: '#/definitions/Ok'
+
+/room/{room_token}:
+  get:
+    summary: 채팅방 정보 반환
+    tags: [Room]
+    parameters:
+      - name: room_token
+        in: path
+        required: true
+        type: string
+        description: 채팅방 token
+    responses:
+      200:
+        description: 성공
+        schema:
+          $ref: '#/definitions/Room'
