@@ -1,0 +1,42 @@
+---
+tags:
+  name: Room
+  description: 채팅방 관련 APIs
+
+/rooms:
+  get:
+    summary: 모든 채팅방 검색
+    tags: [Room]
+    parameters:
+      - name: offset
+        in: query
+        required: false
+        type: number
+        description: 검색시 시작 위치 (optional)
+      - name: size
+        in: query
+        required: false
+        type: number
+        description: 검색시 가져올 갯수 (optional)
+      - name: order
+        in: query
+        required: false
+        type: string
+        enum: [REGDATE_ASC, REGDATE_DESC, ATTENDEE_DESC, ATTENDEE_ASC]
+        description: 정렬 기준 (optional)
+      - name: keyword
+        in: query
+        required: false
+        type: string
+        description: 채팅방 검색시 검색어 (optional)
+      - name: region
+        in: query
+        required: false
+        type: string
+        description: 채팅방 개설자의 국적 (optional)
+    responses:
+      200:
+        description: 성공
+        type: array
+        items:
+          $ref: '#/definitions/Room'

@@ -9,7 +9,8 @@
     "test": "jest -c jest.config.js",
     "test:coverage": "jest -c jest.config.js --coverage",
     "clean": "rimraf coverage dist",
-    "build": "npm run clean && npm run lint && npm run test && tsc -p ./tsconfig.build.json"
+    "build": "npm run clean && npm run lint && npm run test && tsc -p ./tsconfig.build.json && npm run copy-swagger",
+    "copy-swagger": "mkdir -p dist/swagger && cp src/swagger/*.yaml dist/swagger/"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,8 @@
     "@types/node": "^10.12.18",
     "@types/redis": "^2.8.11",
     "@types/request-promise-native": "^1.0.15",
+    "@types/swagger-jsdoc": "0.0.2",
+    "@types/swagger-ui-express": "^3.0.0",
     "jest": "^23.6.0",
     "nodemon": "^1.18.7",
     "rimraf": "^2.6.2",
@@ -48,6 +51,8 @@
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
-    "smart-factory": "^1.0.11"
+    "smart-factory": "^1.0.11",
+    "swagger-jsdoc": "^3.2.9",
+    "swagger-ui-express": "^4.0.2"
   }
 }
