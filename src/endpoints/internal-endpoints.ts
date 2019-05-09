@@ -37,6 +37,8 @@ injectable(EndpointModules.Internal.MyRooms,
     uri: '/internal/my',
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
-
+      wrapAsync((req, res, next) => {
+        res.status(200).json({});
+      })
     ]
   }));
