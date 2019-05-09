@@ -30,3 +30,13 @@ injectable(EndpointModules.Internal.Rooms,
       })
     ]
   }));
+
+injectable(EndpointModules.Internal.MyRooms,
+  [ EndpointModules.Utils.WrapAync ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync): Promise<EndpointTypes.Endpoint> => ({
+    uri: '/internal/my',
+    method: EndpointTypes.EndpointMethod.GET,
+    handler: [
+
+    ]
+  }));
