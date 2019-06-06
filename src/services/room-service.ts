@@ -10,14 +10,17 @@ import { LoggerModules, LoggerTypes } from '../loggers';
 import { RoomJoinError, RoomLeaveError } from './errors';
 
 const cvtMember = () =>
-  (fromMember: ExtApiTypes.Member): ServiceTypes.Member => ({
-    token: fromMember.token,
-    region: fromMember.region,
-    language: fromMember.language,
-    gender: fromMember.gender,
-    nick: fromMember.nick,
-    avatar: fromMember.avatar
-  });
+  (fromMember: ExtApiTypes.Member): ServiceTypes.Member => {
+    if (!fromMember) return null;
+    return {
+      token: fromMember.token,
+      region: fromMember.region,
+      language: fromMember.language,
+      gender: fromMember.gender,
+      nick: fromMember.nick,
+      avatar: fromMember.avatar
+    };
+  };
 
 injectable(ServiceModules.Room.List,
   [ ExtApiModules.AuthReq.MembersByNos,
