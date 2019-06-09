@@ -37,6 +37,7 @@ injectable(ServiceModules.My.Rooms,
 
         const resp: ServiceTypes.MyRoom[] = myRooms.map((r) => ({
           room_token: r.token,
+          room_type: r.room_type,
           owner: convert(find(owners, {member_no: r.owner_no})),
           title: r.title,
           num_attendee: r.num_attendee,
