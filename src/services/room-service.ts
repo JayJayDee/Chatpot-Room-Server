@@ -18,7 +18,9 @@ const cvtMember = () =>
       language: fromMember.language,
       gender: fromMember.gender,
       nick: fromMember.nick,
-      avatar: fromMember.avatar
+      avatar: fromMember.avatar,
+      login_id: fromMember.login_id,
+      auth_type: fromMember.auth_type
     };
   };
 
@@ -40,6 +42,7 @@ injectable(ServiceModules.Room.List,
         if (!owner) return null;
         return {
           room_token: r.token,
+          room_type: r.room_type,
           owner: convert(find(members, {member_no: r.owner_no})),
           title: r.title,
           num_attendee: r.num_attendee,
@@ -238,6 +241,7 @@ injectable(ServiceModules.Room.Get,
         room_token: room.token,
         owner: convert(find(membersFromApi, {member_no: room.owner_no})),
         title: room.title,
+        room_type: room.room_type,
         num_attendee: room.num_attendee,
         max_attendee: room.max_attendee,
         reg_date: room.reg_date,

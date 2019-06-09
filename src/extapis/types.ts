@@ -19,6 +19,8 @@ export namespace ExtApiTypes {
     gender: string;
     nick: Nick;
     avatar: Avatar;
+    auth_type: string;
+    login_id: string;
   };
   export type Nick = {
     en: string;

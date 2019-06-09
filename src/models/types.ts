@@ -1,8 +1,14 @@
 export namespace ModelTypes {
+  export enum RoomType {
+    PUBLIC = 'PUBLIC',
+    ROULETTE = 'ROULETTE',
+    ONEONEONE = 'ONEONONE'
+  }
   export type RoomEntity = {
     no: number;
     token: string;
     owner_no: number;
+    room_type: RoomType;
     title: string;
     num_attendee: number;
     max_attendee: number;

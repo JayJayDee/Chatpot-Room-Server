@@ -103,6 +103,7 @@ injectable(ModelModules.Room.Get,
       if (rows.length === 0) return null;
       const room: ModelTypes.RoomEntity = {
         no: rows[0].no,
+        room_type: rows[0].room_type,
         token: rows[0].token,
         owner_no: rows[0].owner_no,
         title: rows[0].title,

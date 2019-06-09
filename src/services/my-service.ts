@@ -14,7 +14,9 @@ const convertMember = (token: UtilTypes.Auth.CreateMemberToken) =>
     language: m.language,
     gender: m.gender,
     nick: m.nick,
-    avatar: m.avatar
+    avatar: m.avatar,
+    login_id: m.login_id,
+    auth_type: m.auth_type
   });
 
 injectable(ServiceModules.My.Rooms,
@@ -37,6 +39,7 @@ injectable(ServiceModules.My.Rooms,
 
         const resp: ServiceTypes.MyRoom[] = myRooms.map((r) => ({
           room_token: r.token,
+          room_type: r.room_type,
           owner: convert(find(owners, {member_no: r.owner_no})),
           title: r.title,
           num_attendee: r.num_attendee,
