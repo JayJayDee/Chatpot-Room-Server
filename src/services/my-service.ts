@@ -14,7 +14,9 @@ const convertMember = (token: UtilTypes.Auth.CreateMemberToken) =>
     language: m.language,
     gender: m.gender,
     nick: m.nick,
-    avatar: m.avatar
+    avatar: m.avatar,
+    login_id: m.login_id,
+    auth_type: m.auth_type
   });
 
 injectable(ServiceModules.My.Rooms,

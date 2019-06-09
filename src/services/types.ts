@@ -13,6 +13,8 @@ export namespace ServiceTypes {
     gender: string;
     nick: ExtApiTypes.Nick;
     avatar: Avatar;
+    auth_type: string;
+    login_id: string;
   };
   export enum RoomType {
     PUBLIC = 'PUBLIC',

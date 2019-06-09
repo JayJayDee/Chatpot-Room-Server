@@ -18,7 +18,9 @@ const cvtMember = () =>
       language: fromMember.language,
       gender: fromMember.gender,
       nick: fromMember.nick,
-      avatar: fromMember.avatar
+      avatar: fromMember.avatar,
+      login_id: fromMember.login_id,
+      auth_type: fromMember.auth_type
     };
   };
 
