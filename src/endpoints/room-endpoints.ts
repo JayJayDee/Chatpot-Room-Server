@@ -2,7 +2,7 @@ import { injectable } from 'smart-factory';
 import { EndpointModules } from './modules';
 import { EndpointTypes } from './types';
 import { ServiceModules, ServiceTypes } from '../services';
-import { InvalidParamError } from '../errors';
+import { InvalidParamError, BaseLogicError } from '../errors';
 import { UtilModules } from '../utils/modules';
 import { UtilTypes } from '../utils/types';
 import { MiddlewareModules, MiddlewareTypes } from '../middlewares';
@@ -45,6 +45,13 @@ injectable(EndpointModules.Room.List,
         ]
       }));
 
+
+class InvalidMaxAttendeeNumberError extends BaseLogicError {
+  constructor() {
+    super('INVALID_MAX_ATTENDEE', 'max_attendee must be 2 ~ 10');
+  }
+}
+
 injectable(EndpointModules.Room.Create,
   [ EndpointModules.Utils.WrapAync,
     ServiceModules.Room.Create,
@@ -77,7 +84,7 @@ injectable(EndpointModules.Room.Create,
             }
 
             if (max_attendee > 10 || max_attendee < 2) {
-              throw new InvalidParamError('max_attendee must be 2 ~ 10');
+              throw new InvalidMaxAttendeeNumberError();
             }
 
             const resp = await create({
