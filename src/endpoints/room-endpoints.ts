@@ -69,11 +69,22 @@ injectable(EndpointModules.Room.Create,
             if (decrypt(memberToken) === null)
               throw new InvalidParamError('invalid member_token');
 
+            let max_attendee: number = 0;
+            try {
+              max_attendee = parseInt(maxAttendee);
+            } catch (err) {
+              throw new InvalidParamError('max_attendee must be a number');
+            }
+
+            if (max_attendee > 10 || max_attendee < 2) {
+              throw new InvalidParamError('max_attendee must be 2 ~ 10');
+            }
+
             const resp = await create({
               title,
               owner_no: decrypt(memberToken).member_no,
               owner_token: memberToken,
-              max_attendee: parseInt(maxAttendee)
+              max_attendee
             });
             res.status(200).json(resp);
           })
