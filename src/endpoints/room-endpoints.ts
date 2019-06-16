@@ -39,7 +39,7 @@ injectable(EndpointModules.Room.List,
               throw new InvalidParamError('offset, size must be number');
             }
 
-            const rooms = await queryRooms({ offset, size, order, keyword, region });
+            const rooms = await queryRooms({ offset, size, keyword, region }, order);
             res.status(200).json(rooms);
           })
         ]
