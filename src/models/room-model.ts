@@ -35,6 +35,9 @@ injectable(ModelModules.Room.List,
         const rows: any[] = await mysql.query(query, params) as any[];
         const foundRows: any[] = await mysql.query('SELECT FOUND_ROWS() AS rs') as any[];
 
+        console.log(query);
+        console.log(params);
+
         const all = foundRows[0].rs;
         const rooms: ModelTypes.RoomEntity[] = rows.map(cvtRoom);
         return {
