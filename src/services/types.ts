@@ -102,4 +102,19 @@ export namespace ServiceTypes {
   export namespace MyService {
     export type Rooms = (memberNo: number) => Promise<MyRoom[]>;
   }
+
+  export namespace Roulette {
+    type Gender = 'M' | 'F' | 'NOT_YET';
+    type MatchFilter = {
+      region?: String;
+      gender?: Gender;
+    };
+    type Request = {
+      request_id: number;
+      matched: boolean;
+    };
+
+    export type MatchRequest = (memberNo: number, filter?: MatchFilter) => Promise<void>;
+    export type GetMyRequests = (memberNo: number) => Promise<Request[]>;
+  }
 }
