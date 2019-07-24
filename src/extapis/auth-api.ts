@@ -3,6 +3,9 @@ import { ExtApiModules } from './modules';
 import { ConfigModules, ConfigTypes } from '../configs';
 import { ExtApiTypes } from './types';
 
+const getArrayQs = (memberNos: number[]) =>
+  memberNos.map((n) => `member_nos=${n}`).join('&');
+
 injectable(ExtApiModules.AuthReq.MembersByNos,
   [ ConfigModules.ExternalApiConfig,
     ExtApiModules.Requestor ],
@@ -12,9 +15,8 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
     async (memberNos: number[]) => {
       if (memberNos.length === 0) return [];
       const apiResp: any[] = await request({
-        uri: `${cfg.authBaseUri}/internal/member`,
-        method: ExtApiTypes.RequestMethod.GET,
-        qs: { member_nos: memberNos }
+        uri: `${cfg.authBaseUri}/internal/member?${getArrayQs(memberNos)}`,
+        method: ExtApiTypes.RequestMethod.GET
       });
       const members: ExtApiTypes.Member[] = apiResp.map((elem) => ({
         member_no: elem.member_no,
