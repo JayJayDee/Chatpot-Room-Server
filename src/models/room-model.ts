@@ -32,10 +32,21 @@ injectable(ModelModules.Room.List,
             ?,?
         `;
         const params = [ ...where.params, offset, size ];
-        const rows: any[] = await mysql.query(query, params) as any[];
-        const foundRows: any[] = await mysql.query('SELECT FOUND_ROWS() AS rs') as any[];
 
-        const all = foundRows[0].rs;
+        const wholeSizeQuery = `
+          SELECT
+            COUNT(r.no) AS num_whole
+          FROM
+            chatpot_room AS r
+          INNER JOIN
+            chatpot_room_has_member AS rhm ON
+              rhm.room_no=r.no AND rhm.is_owner=1
+          ${where.whereClause}`;
+
+        const rows: any[] = await mysql.query(query, params) as any[];
+        const foundRows: any[] = await mysql.query(wholeSizeQuery, [ ...where.params ]) as any[];
+
+        const all = foundRows[0].num_whole;
         const rooms: ModelTypes.RoomEntity[] = rows.map(cvtRoom);
         return {
           all,
