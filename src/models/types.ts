@@ -113,5 +113,19 @@ export namespace ModelTypes {
       Request = 'Model/Roulette/Request',
       Status = 'Model/Rouletee/Status'
     }
+
+    enum RegionType {
+      ALL = 'ALL',
+      FOREIGNER = 'FOREIGNER'
+    }
+    type RequestParam = {
+      region_type: RegionType;
+      member_token: string;
+      member_no: number;
+    };
+    type RequestRes = {
+      request_id: string;
+    };
+    export type Request = (param: RequestParam) => Promise<RequestRes>;
   }
 }
