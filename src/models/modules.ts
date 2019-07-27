@@ -22,4 +22,9 @@ export namespace ModelModules {
   export enum History {
     Write = 'Model/History/Write'
   }
+
+  export enum Roulette {
+    Request = 'Model/Roulette/Request',
+    Status = 'Model/Rouletee/Status'
+  }
 }
