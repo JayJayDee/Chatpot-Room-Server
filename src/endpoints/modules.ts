@@ -22,4 +22,9 @@ export namespace EndpointModules {
     Rooms = 'Endpoint/Internal/Rooms',
     MyRooms = 'Endpoint/Internal/MyRooms'
   }
+
+  export enum Roulette {
+    Request = 'Endpoint/Roulette/Create',
+    Status = 'Endpoint/Roulette/Status'
+  }
 }

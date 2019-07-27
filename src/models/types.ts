@@ -107,4 +107,11 @@ export namespace ModelTypes {
   export namespace History {
     export type Write = (elem: HistoryElement) => Promise<void>;
   }
+
+  export namespace Roulette {
+    export enum Roulette {
+      Request = 'Model/Roulette/Request',
+      Status = 'Model/Rouletee/Status'
+    }
+  }
 }
