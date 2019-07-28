@@ -12,6 +12,8 @@ injectable(ModelModules.Roulette.Request,
       const requestId = generateRequestId(param.member_no);
       console.log(requestId);
       const resp = await mysql.transaction(async (con) => {
+        console.log(param);
+        return { test: 'test '};
       });
       return resp;
     });

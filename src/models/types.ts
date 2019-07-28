@@ -121,7 +121,9 @@ export namespace ModelTypes {
     type RequestParam = {
       region_type: RegionType;
       member_token: string;
+      member_region: string;
       member_no: number;
+      max_roulette: number;
     };
     type RequestRes = {
       request_id: string;

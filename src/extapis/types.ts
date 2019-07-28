@@ -21,6 +21,7 @@ export namespace ExtApiTypes {
     avatar: Avatar;
     auth_type: string;
     login_id: string;
+    max_roulette: number;
   };
   export type Nick = {
     en: string;

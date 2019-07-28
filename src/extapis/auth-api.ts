@@ -27,7 +27,8 @@ injectable(ExtApiModules.AuthReq.MembersByNos,
         nick: elem.nick,
         avatar: elem.avatar,
         login_id: elem.login_id,
-        auth_type: elem.auth_type
+        auth_type: elem.auth_type,
+        max_roulette: elem.max_roulette
       }));
       return members;
     });
