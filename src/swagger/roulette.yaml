@@ -1,0 +1,52 @@
+---
+tags:
+  name: Roulette
+  description: 랜덤 채팅 신청/취소 APIs
+
+/roulette:
+  post:
+    summary: 새로운 랜덤채팅 신청.
+    tags: [Roulette]
+    parameters:
+      - name: member_token
+        in: formData
+        required: true
+        type: string
+        description: 회원 token
+      - name: region_type
+        in: formData
+        required: true
+        type: string
+        enum: [FOREIGNER,ALL]
+        description: 신청 종류.<br />FOREIGNER = 외국인만, ALL = 상관없음
+    responses:
+      200:
+        description: 성공
+        schema:
+          type: object
+          properties:
+            request_id:
+              type: string
+              description: 랜덤채팅 신청 ID
+      400:
+        description: MAX_ROULETTE_EXCEED = 최대 랜덤채팅 신청 갯수 도달.
+
+
+/roulette/{member_token}/status:
+  get:
+    summary: 신청하거나 매칭된 모든 랜덤채팅 상태 조회
+    tags: [Roulette]
+    parameters:
+      - name: member_token
+        in: path
+        required: true
+        type: string
+        description: 회원 token
+    responses:
+      200:
+        description: 성공
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/RouletteStatus'
+

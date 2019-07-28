@@ -73,3 +73,25 @@ definitions:
       reg_Date:
         type: string
         description: 채팅방의 개설 일시
+
+  RouletteStatus:
+    type: object
+    properties:
+      request_id:
+        type: string
+        description: 신청 ID
+      region_type:
+        type: string
+        enum: [FOREIGNER,ALL]
+        description: 신청 종류.<br />FOREIGNER = 외국인만, ALL = 상관없음
+      match_status:
+        type: string
+        enum: [WAITING,MATCHED]
+        description: 랜덤채팅 진행 상태.<br />WAITING = 매칭 대기중, MATCHED = 매칭되었고 랜덤채팅 진행중
+      room_token:
+        type: string
+        required: false
+        description: match_status가 WAITING 인 경우 null. 매칭된 채팅방의 room_token.
+      reg_date:
+        type: number
+        description: 신청 일자. UTC Timestamp
