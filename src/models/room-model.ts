@@ -159,9 +159,10 @@ injectable(ModelModules.Room.Create,
           title=?,
           num_attendee=0,
           max_attendee=?,
+          room_type=?,
           reg_date=NOW()
       `;
-      const params: any[] = [ param.title, param.max_attendee ];
+      const params: any[] = [ param.title, param.max_attendee, param.room_type ];
       const resp: any = await mysql.query(sql, params);
       if (resp.affectedRows !== 1) return null;
       const newRoomNo: number = resp.insertId;

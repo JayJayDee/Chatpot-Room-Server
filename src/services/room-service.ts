@@ -76,7 +76,12 @@ injectable(ServiceModules.Room.Create,
     enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
-      const createdRoomNo = await create(param);
+      const createdRoomNo = await create({
+        title: param.title,
+        owner_no: param.owner_no,
+        max_attendee: param.max_attendee,
+        room_type: ModelTypes.RoomType.PUBLIC
+      });
       const token = createRoomToken(createdRoomNo);
       log.debug(`[room-service] room:${createdRoomNo} created`);
 
@@ -108,6 +113,67 @@ injectable(ServiceModules.Room.Create,
         room_token: token
       };
     });
+
+
+injectable(ServiceModules.Room.CreateRoulette,
+  [ LoggerModules.Logger,
+    UtilModules.Auth.CrateRoomToken,
+    ModelModules.Room.Create,
+    ModelModules.Room.UpdateToken,
+    ModelModules.RoomMember.AddMember,
+    ModelModules.History.Write,
+    ExtApiModules.MessageReq.EnterRoom ],
+  async (log: LoggerTypes.Logger,
+    createRoomToken: UtilTypes.Auth.CreateRoomToken,
+    createRoom: ModelTypes.Room.Create,
+    updateRoomToken: ModelTypes.Room.UpdateToken,
+    addMember: ModelTypes.RoomMember.AddMember,
+    history: ModelTypes.History.Write,
+    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.CreateRoulette> =>
+
+    async (param) => {
+      const roomNo = await createRoom({
+        owner_no: param.owner_no,
+        max_attendee: 2,
+        title: '-',
+        room_type: ModelTypes.RoomType.ROULETTE
+      });
+      const roomToken = createRoomToken(roomNo);
+      await updateRoomToken(roomNo, roomToken);
+      log.debug(`[room-service] roulette-room:${roomNo} created`);
+
+      await addMember({
+        room_no: roomNo,
+        member_no: param.owner_no,
+        is_owner: true
+      });
+      await addMember({
+        room_no: roomNo,
+        member_no: param.attendee_no,
+        is_owner: true
+      });
+
+      history({
+        action: ModelTypes.HistoryAction.CREATE,
+        member_no: param.owner_no,
+        room_no: roomNo,
+        room_title: '-'
+      });
+      history({
+        action: ModelTypes.HistoryAction.JOIN,
+        member_no: param.attendee_no,
+        room_no: roomNo,
+        room_title: '-'
+      });
+
+      await enterDevTokensProcess(param.owner_token, roomToken);
+      await enterDevTokensProcess(param.attendee_token, roomToken);
+
+      return {
+        room_token: roomToken
+      };
+    });
+
 
 injectable(ServiceModules.Room.Join,
   [ LoggerModules.Logger,

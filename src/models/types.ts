@@ -54,6 +54,7 @@ export namespace ModelTypes {
     title: string;
     owner_no: number;
     max_attendee: number;
+    room_type: RoomType;
   };
 
   export namespace Room {

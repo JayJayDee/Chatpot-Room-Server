@@ -6,6 +6,7 @@ export namespace ConfigTypes {
     extapi: ExternalApiConfig;
     cache: CacheConfig;
     kvStorage: KeyValueStorageConfig;
+    roulette: RouletteConfig;
   };
   export type HttpConfig = {
     port: number;
@@ -39,6 +40,10 @@ export namespace ConfigTypes {
   export type ExternalApiConfig = {
     authBaseUri: string;
     messageBaseUri: string;
+  };
+  export type RouletteConfig = {
+    runnerEnabled: boolean;
+    runnerPeriod: number;
   };
   export enum CacheProvider {
     MEMORY = 'MEMORY', REDIS = 'REDIS'

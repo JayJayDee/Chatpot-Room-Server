@@ -33,6 +33,10 @@ injectable(ConfigModules.EmptyConfig, [], async (): Promise<ConfigTypes.RootConf
   },
   cache: {
     enabled: null
+  },
+  roulette: {
+    runnerEnabled: null,
+    runnerPeriod: null
   }
 }));
 
@@ -56,7 +60,9 @@ injectable(ConfigModules.ConfigRules, [],
     { key: 'KV_STORAGE_REDIS_HOST', path: ['kvStorage', 'redis', 'host'], defaultValue: null },
     { key: 'KV_STORAGE_REDIS_PORT', path: ['kvStorage', 'redis', 'port'], defaultValue: null },
     { key: 'KV_STORAGE_REDIS_PASSWORD', path: ['kvStorage', 'redis', 'password'], defaultValue: null },
-    { key: 'CACHE_ENABLED', path: ['cache', 'enabled'], defaultValue: false }
+    { key: 'CACHE_ENABLED', path: ['cache', 'enabled'], defaultValue: false },
+    { key: 'ROULETTE_RUNNER_ENABLED', path: ['roulette', 'runnerEnabled'], defaultValue: false },
+    { key: 'ROULETTE_RUNNER_PERIOD', path: ['roulette', 'runnerPeriod'], defaultValue: 5 }
   ]));
 
 injectable(ConfigModules.ConfigSource,
@@ -94,6 +100,10 @@ injectable(ConfigModules.KeyValueStorageConfig,
 injectable(ConfigModules.CacheConfig,
   [ConfigModules.RootConfig],
   async (root: ConfigTypes.RootConfig) => root.cache);
+
+injectable(ConfigModules.RouletteConfig,
+  [ConfigModules.RootConfig],
+  async (root: ConfigTypes.RootConfig) => root.roulette);
 
 injectable(ConfigModules.Env,
   [ConfigModules.ConfigSource],

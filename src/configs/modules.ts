@@ -10,6 +10,7 @@ export namespace ConfigModules {
   export const CacheConfig = 'Config/CacheConfig';
   export const KeyValueStorageConfig = 'Config/KeyValueStorageConfig';
   export const ExternalApiConfig = 'Config/ExternalApiConfig';
+  export const RouletteConfig = 'Config/RouletteConfig';
   export const Env = 'Config/Env';
   export const ConfigRules = 'Config/ConfigRules';
 }
