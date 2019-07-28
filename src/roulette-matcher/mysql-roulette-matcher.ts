@@ -24,11 +24,12 @@ injectable(RouletteMatcherModules.Match,
           return;
         }
 
-        log.debug(`${tag} there request:${one.request_id}, fetching another request..`);
+        log.debug(`${tag} there is request:${one.request_id}, fetching another request..`);
 
         const two = await pop({
           members_exclusion: [ one.member_no ],
-          region_type: one.region_type,
+          region_exclusion: one.region_type === RegionType.FOREIGNER ?
+            one.member_region : null
         });
 
         if (two === null) {
@@ -50,7 +51,7 @@ enum RegionType {
 }
 type FetchCondition = {
   members_exclusion?: number[];
-  region_type?: RegionType;
+  region_exclusion?: string;
 };
 type FetchedRow = {
   request_id: string;
@@ -62,6 +63,40 @@ type FetchedRow = {
 };
 const fetchOneRequest = (con: MysqlTypes.MysqlTransaction) =>
   async (condition: FetchCondition): Promise<FetchedRow> => {
+    let whereClauses: string[] = [];
+    const params: any[] = [];
 
-    return null;
+    if (condition.members_exclusion) {
+      whereClauses.push(`member_no NOT IN (${condition.members_exclusion.map((d) => '?').join(',')})`);
+      condition.members_exclusion.forEach((m) => params.push(m));
+    }
+
+    if (condition.region_exclusion) {
+      whereClauses.push(`member_region != ?`);
+      params.push(condition.region_exclusion);
+    }
+
+    const whereClause =
+      whereClauses.length > 0 ? ` WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const sql = `
+      SELECT
+        *
+      FROM
+        chatpot_roulette_request
+      ${whereClause}
+      ORDER BY
+        no ASC
+      LIMIT 1
+    `;
+    const rows: any[] = await con.query(sql, params) as any[];
+    if (rows.length === 0) return null;
+    return {
+      request_id: rows[0].request_id,
+      member_no: rows[0].member_no,
+      member_token: rows[0].member_token,
+      member_region: rows[0].member_region,
+      region_type: rows[0].target_region === 'FOREIGNER' ? RegionType.FOREIGNER : RegionType.ALL,
+      reg_date: rows[0].reg_date
+    };
   };
