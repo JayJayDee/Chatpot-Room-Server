@@ -119,11 +119,17 @@ injectable(ServiceModules.Room.CreateRoulette,
   [ LoggerModules.Logger,
     UtilModules.Auth.CrateRoomToken,
     ModelModules.Room.Create,
-    ModelModules.Room.UpdateToken ],
+    ModelModules.Room.UpdateToken,
+    ModelModules.RoomMember.AddMember,
+    ModelModules.History.Write,
+    ExtApiModules.MessageReq.EnterRoom ],
   async (log: LoggerTypes.Logger,
     createRoomToken: UtilTypes.Auth.CreateRoomToken,
     createRoom: ModelTypes.Room.Create,
-    updateRoomToken: ModelTypes.Room.UpdateToken): Promise<ServiceTypes.RoomService.CreateRoulette> =>
+    updateRoomToken: ModelTypes.Room.UpdateToken,
+    addMember: ModelTypes.RoomMember.AddMember,
+    history: ModelTypes.History.Write,
+    enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.CreateRoulette> =>
 
     async (param) => {
       const roomNo = await createRoom({
@@ -133,8 +139,35 @@ injectable(ServiceModules.Room.CreateRoulette,
         room_type: ModelTypes.RoomType.ROULETTE
       });
       const roomToken = createRoomToken(roomNo);
+      await updateRoomToken(roomNo, roomToken);
+      log.debug(`[room-service] roulette-room:${roomNo} created`);
 
-      // TODO: to be implemented.
+      await addMember({
+        room_no: roomNo,
+        member_no: param.owner_no,
+        is_owner: true
+      });
+      await addMember({
+        room_no: roomNo,
+        member_no: param.attendee_no,
+        is_owner: true
+      });
+
+      history({
+        action: ModelTypes.HistoryAction.CREATE,
+        member_no: param.owner_no,
+        room_no: roomNo,
+        room_title: '-'
+      });
+      history({
+        action: ModelTypes.HistoryAction.JOIN,
+        member_no: param.attendee_no,
+        room_no: roomNo,
+        room_title: '-'
+      });
+
+      await enterDevTokensProcess(param.owner_token, roomToken);
+      await enterDevTokensProcess(param.attendee_token, roomToken);
 
       return {
         room_token: roomToken

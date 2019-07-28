@@ -2,6 +2,7 @@ import { injectable } from 'smart-factory';
 import { RouletteMatcherModules } from './modules';
 import { RouletteMatcherTypes } from './types';
 import { LoggerModules, LoggerTypes } from '../loggers';
+import { ConfigModules, ConfigTypes } from '../configs';
 
 const tag = '[matcher-runner]';
 
@@ -9,15 +10,22 @@ let lastTick: number = null;
 
 injectable(RouletteMatcherModules.MatcherRunner,
   [ LoggerModules.Logger,
-    RouletteMatcherModules.Match ],
+    RouletteMatcherModules.Match,
+    ConfigModules.RouletteConfig ],
   async (log: LoggerTypes.Logger,
-    match: RouletteMatcherTypes.Match): Promise<RouletteMatcherTypes.MatcherRunner> =>
+    match: RouletteMatcherTypes.Match,
+    cfg: ConfigTypes.RouletteConfig): Promise<RouletteMatcherTypes.MatcherRunner> =>
 
     async () => {
-      log.info(`${tag} matcher-runner up and started.`);
+      if (cfg.runnerEnabled === false) {
+        log.info(`${tag} roulette-matcher-runner disabled. will not run.`);
+        return;
+      }
+
+      log.info(`${tag} roulette-matcher-runner up and started.`);
       while (true) {
         await match();
-        await wait(5);
+        await wait(cfg.runnerPeriod);
       }
     });
 

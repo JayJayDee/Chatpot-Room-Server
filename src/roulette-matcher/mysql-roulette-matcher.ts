@@ -15,16 +15,14 @@ injectable(RouletteMatcherModules.Match,
     async () => {
       await mysql.transaction(async (con) => {
         const pop = fetchOneRequest(con);
+        const deleteMy = deleteRequests(con);
+        const updateMy = updateCheckers(con);
 
-        log.debug(`${tag} fetching request ..`);
         const one = await pop({});
 
         if (one === null) {
-          log.debug(`${tag} there is no request`);
           return;
         }
-
-        log.debug(`${tag} there is request:${one.request_id}, fetching another request..`);
 
         const two = await pop({
           members_exclusion: [ one.member_no ],
@@ -33,15 +31,23 @@ injectable(RouletteMatcherModules.Match,
         });
 
         if (two === null) {
-          log.debug(`${tag} there is no matching-request`);
           return;
         }
 
-        log.debug(`${tag} two reqeust matched!`);
-        console.log(one);
-        console.log(two);
+        const requestIds = [
+          one.request_id,
+          two.request_id
+        ];
+        log.debug(`${tag} two reqeust matched. request_ids=`);
+        console.log(requestIds);
+
+        await deleteMy(requestIds);
+        await updateMy({
+          request_ids: requestIds,
+          room_no: 1,
+          room_token: 'test-token'
+        });
       });
-      return null;
     });
 
 
@@ -99,4 +105,45 @@ const fetchOneRequest = (con: MysqlTypes.MysqlTransaction) =>
       region_type: rows[0].target_region === 'FOREIGNER' ? RegionType.FOREIGNER : RegionType.ALL,
       reg_date: rows[0].reg_date
     };
+  };
+
+
+const deleteRequests = (con: MysqlTypes.MysqlTransaction) =>
+  async (requestIds: string[]) => {
+    const inClause = requestIds.map((r) => '?').join(',');
+    const sql =
+    `
+      DELETE FROM
+        chatpot_roulette_request
+      WHERE
+        request_id IN (${inClause})
+    `;
+    await con.query(sql, requestIds);
+  };
+
+type CheckerParam = {
+  request_ids: string[];
+  room_no: number;
+  room_token: string;
+};
+const updateCheckers = (con: MysqlTypes.MysqlTransaction) =>
+  async (param: CheckerParam) => {
+    const inClause = param.request_ids.map((r) => '?').join(',');
+    const params = [
+      param.room_no,
+      param.room_token
+    ];
+    param.request_ids.forEach((id) => params.push(id));
+    const sql = `
+      UPDATE
+        chatpot_roulette_check
+      SET
+        room_no=?,
+        room_token=?,
+        match_status='MATCHED'
+      WHERE
+        request_id IN (${inClause}) AND
+        match_status='WAITING'
+    `;
+    await con.query(sql, params) as any;
   };

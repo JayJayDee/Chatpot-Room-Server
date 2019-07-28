@@ -1,8 +1,4 @@
 export namespace RouletteMatcherTypes {
-  type MatchResult = {
-    matched: boolean;
-    request_ids: string[];
-  };
-  export type Match = () => Promise<MatchResult>;
+  export type Match = () => Promise<void>;
   export type MatcherRunner = () => Promise<void>;
 }
