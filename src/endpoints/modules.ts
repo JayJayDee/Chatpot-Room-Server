@@ -25,6 +25,7 @@ export namespace EndpointModules {
 
   export enum Roulette {
     Request = 'Endpoint/Roulette/Create',
-    Status = 'Endpoint/Roulette/Status'
+    Status = 'Endpoint/Roulette/Status',
+    Cancel = 'Endpoint/Roulette/Cancel'
   }
 }

@@ -58,14 +58,19 @@ const parseRegionType = (expr: string) => {
 
 
 injectable(EndpointModules.Roulette.Status,
-  [ EndpointModules.Utils.WrapAync ],
-  async (wrapAsync: EndpointTypes.Utils.WrapAsync): Promise<EndpointTypes.Endpoint> =>
+  [ EndpointModules.Utils.WrapAync,
+    UtilModules.Auth.DecryptMemberToken ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> =>
 
   ({
     uri: '/roulette/:member_token/status',
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
       wrapAsync(async (req, res, next) => {
+        const memberToken = req.params['member_token'];
+        if (!memberToken) throw new InvalidParamError('member_token required');
+
         res.status(200).json({});
       })
     ]
