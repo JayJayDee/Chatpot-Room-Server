@@ -76,7 +76,12 @@ injectable(ServiceModules.Room.Create,
     enterDevTokensProcess: ExtApiTypes.MessageReq.EnterRoom): Promise<ServiceTypes.RoomService.Create> =>
 
     async (param) => {
-      const createdRoomNo = await create(param);
+      const createdRoomNo = await create({
+        title: param.title,
+        owner_no: param.owner_no,
+        max_attendee: param.max_attendee,
+        room_type: ModelTypes.RoomType.PUBLIC
+      });
       const token = createRoomToken(createdRoomNo);
       log.debug(`[room-service] room:${createdRoomNo} created`);
 
@@ -108,6 +113,34 @@ injectable(ServiceModules.Room.Create,
         room_token: token
       };
     });
+
+
+injectable(ServiceModules.Room.CreateRoulette,
+  [ LoggerModules.Logger,
+    UtilModules.Auth.CrateRoomToken,
+    ModelModules.Room.Create,
+    ModelModules.Room.UpdateToken ],
+  async (log: LoggerTypes.Logger,
+    createRoomToken: UtilTypes.Auth.CreateRoomToken,
+    createRoom: ModelTypes.Room.Create,
+    updateRoomToken: ModelTypes.Room.UpdateToken): Promise<ServiceTypes.RoomService.CreateRoulette> =>
+
+    async (param) => {
+      const roomNo = await createRoom({
+        owner_no: param.owner_no,
+        max_attendee: 2,
+        title: '-',
+        room_type: ModelTypes.RoomType.ROULETTE
+      });
+      const roomToken = createRoomToken(roomNo);
+
+      // TODO: to be implemented.
+
+      return {
+        room_token: roomToken
+      };
+    });
+
 
 injectable(ServiceModules.Room.Join,
   [ LoggerModules.Logger,

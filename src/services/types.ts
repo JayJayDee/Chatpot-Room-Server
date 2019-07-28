@@ -91,9 +91,23 @@ export namespace ServiceTypes {
     room_token: string;
   };
 
+  type ChatRouletteReq = {
+    owner_token: string;
+    owner_no: number;
+    attendee_token: string;
+    attendee_no: number;
+    title: string;
+    max_attendee: number;
+  };
+
+  type ChatRouletteRes = {
+    room_token: string;
+  };
+
   export namespace RoomService {
     export type List = (query: ModelTypes.RoomSearchQuery, order?: ModelTypes.RoomOrder) => Promise<RoomList>;
     export type Create = (param: ReqRoomCreate) => Promise<ResRoomCreate>;
+    export type CreateRoulette = (param: ChatRouletteReq) => Promise<ChatRouletteRes>;
     export type Join = (param: ReqRoomJoin) => Promise<void>;
     export type Leave = (param: ReqRoomLeave) => Promise<void>;
     export type Get = (roomNo: number) => Promise<RoomDetail>;
