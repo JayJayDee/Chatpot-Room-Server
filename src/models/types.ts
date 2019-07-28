@@ -109,11 +109,6 @@ export namespace ModelTypes {
   }
 
   export namespace Roulette {
-    export enum Roulette {
-      Request = 'Model/Roulette/Request',
-      Status = 'Model/Rouletee/Status'
-    }
-
     enum RegionType {
       ALL = 'ALL',
       FOREIGNER = 'FOREIGNER'
@@ -121,11 +116,29 @@ export namespace ModelTypes {
     type RequestParam = {
       region_type: RegionType;
       member_token: string;
+      member_region: string;
       member_no: number;
+      max_roulette: number;
     };
     type RequestRes = {
       request_id: string;
     };
     export type Request = (param: RequestParam) => Promise<RequestRes>;
+
+    type StatusParam = {
+      member_no: number;
+    };
+    enum MatchStatus {
+      WAITING = 'WATITING',
+      MATCHED = 'MATCHED'
+    }
+    type RouletteStatus = {
+      request_id: string;
+      region_type: RegionType;
+      match_status: MatchStatus;
+      room_token: string | null;
+      reg_date: number;
+    };
+    export type FetchStatuses = (param: StatusParam) => Promise<RouletteStatus[]>;
   }
 }
