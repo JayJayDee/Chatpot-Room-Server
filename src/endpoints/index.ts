@@ -17,7 +17,8 @@ injectable(EndpointModules.Endpoints,
     EndpointModules.Internal.Rooms,
     EndpointModules.Internal.MyRooms,
     EndpointModules.Roulette.Request,
-    EndpointModules.Roulette.Status],
+    EndpointModules.Roulette.Status,
+    EndpointModules.Roulette.Cancel ],
 
   async (create: EndpointTypes.Endpoint,
     list: EndpointTypes.Endpoint,
@@ -29,11 +30,12 @@ injectable(EndpointModules.Endpoints,
     internalRooms: EndpointTypes.Endpoint,
     internalMyRooms: EndpointTypes.Endpoint,
     request: EndpointTypes.Endpoint,
-    status: EndpointTypes.Endpoint) =>
+    status: EndpointTypes.Endpoint,
+    cancel: EndpointTypes.Endpoint) =>
 
     ([
       create, list, featured, join,
       leave, myRooms, get,
       internalRooms, internalMyRooms,
-      request, status
+      request, status, cancel
     ]));

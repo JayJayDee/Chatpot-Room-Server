@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import * as moment from 'moment';
 import { injectable } from 'smart-factory';
 import { ModelModules } from './modules';
 import { ModelTypes } from './types';
@@ -60,20 +61,52 @@ injectable(ModelModules.Roulette.Request,
           throw new MaxRouletteExceedError();
         }
 
-        return { test: 'test '};
+        return {
+          request_id: requestId
+        };
       });
       return resp;
     });
 
 
-injectable(ModelModules.Roulette.Status,
+injectable(ModelModules.Roulette.FetchStatuses,
   [ MysqlModules.Mysql ],
   async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Roulette.FetchStatuses> =>
 
     async (param) => {
-      return [];
+      const sql = `
+        SELECT
+          *
+        FROM
+          chatpot_roulette_check
+        WHERE
+          member_no=?
+      `;
+      const rows: any[] = await mysql.query(sql, [ param.member_no ]) as any[];
+      return rows.map((r) => ({
+        region_type: parseRegionType(r.target_region),
+        request_id: r.request_id,
+        match_status: parseMatchStatus(r.match_status),
+        room_token: r.room_token,
+        reg_date: parseInt(moment(r.reg_date).format('X'))
+      }));
     });
-
 
 const generateRequestId = (memberNo: number): string =>
   createHash('sha256').update(`${memberNo}${Date.now()}`).digest('hex');
+
+enum RegionType {
+  ALL = 'ALL',
+  FOREIGNER = 'FOREIGNER'
+}
+const parseRegionType = (expr: string): RegionType =>
+  expr === 'ALL' ? RegionType.ALL :
+  RegionType.FOREIGNER;
+
+enum MatchStatus {
+  WAITING = 'WAITING',
+  MATCHED = 'MATCHED'
+}
+const parseMatchStatus = (expr: string): MatchStatus =>
+  expr === 'WAITING' ? MatchStatus.WAITING :
+  MatchStatus.MATCHED;

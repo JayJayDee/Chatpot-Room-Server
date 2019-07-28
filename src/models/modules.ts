@@ -25,6 +25,6 @@ export namespace ModelModules {
 
   export enum Roulette {
     Request = 'Model/Roulette/Request',
-    Status = 'Model/Rouletee/Status'
+    FetchStatuses = 'Model/Rouletee/Status'
   }
 }

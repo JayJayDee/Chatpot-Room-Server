@@ -137,6 +137,7 @@ export namespace ModelTypes {
       region_type: RegionType;
       match_status: MatchStatus;
       room_token: string | null;
+      reg_date: number;
     };
     export type FetchStatuses = (param: StatusParam) => Promise<RouletteStatus[]>;
   }

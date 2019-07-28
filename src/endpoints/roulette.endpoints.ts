@@ -59,9 +59,11 @@ const parseRegionType = (expr: string) => {
 
 injectable(EndpointModules.Roulette.Status,
   [ EndpointModules.Utils.WrapAync,
-    UtilModules.Auth.DecryptMemberToken ],
+    UtilModules.Auth.DecryptMemberToken,
+    ModelModules.Roulette.FetchStatuses ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> =>
+    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken,
+    fetchStatuses: ModelTypes.Roulette.FetchStatuses): Promise<EndpointTypes.Endpoint> =>
 
   ({
     uri: '/roulette/:member_token/status',
@@ -71,7 +73,29 @@ injectable(EndpointModules.Roulette.Status,
         const memberToken = req.params['member_token'];
         if (!memberToken) throw new InvalidParamError('member_token required');
 
-        res.status(200).json({});
+        const member = decryptMemberToken(memberToken);
+        if (member === null) throw new InvalidParamError('invalid member_token');
+
+        const statuses = await fetchStatuses({ member_no: member.member_no });
+        res.status(200).json(statuses);
       })
     ]
   }));
+
+
+injectable(EndpointModules.Roulette.Cancel,
+  [ EndpointModules.Utils.WrapAync,
+    UtilModules.Auth.DecryptMemberToken ],
+  async (wrapAsync: EndpointTypes.Utils.WrapAsync,
+    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> =>
+
+    ({
+      uri: '/roulette/:request_id/cancel',
+      method: EndpointTypes.EndpointMethod.POST,
+      handler: [
+        wrapAsync(async (req, res, next) => {
+          // TODO: roulette request deletion.
+          res.status(200).json({});
+        })
+      ]
+    }));

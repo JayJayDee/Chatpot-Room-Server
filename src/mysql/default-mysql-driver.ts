@@ -25,6 +25,7 @@ type PoolCreateOpts = {
   password: string;
   database: string;
   connectionLimit: number;
+  timezone: string;
 };
 type PoolCreateFunction = (opts: PoolCreateOpts) => Pool;
 type GetConnectionFunction = (pool: Pool) => Promise<PoolConnection>;
@@ -32,7 +33,10 @@ type GetConnectionFunction = (pool: Pool) => Promise<PoolConnection>;
 export const getConnection =
   (cfg: ConfigTypes.MysqlConfig, poolCreateFunc: PoolCreateFunction) =>
     (): Promise<Pool> => new Promise((resolve, reject) => {
-      const pool = poolCreateFunc(cfg);
+      const pool = poolCreateFunc({
+        ...cfg,
+        timezone: 'UTC'
+      });
       pool.query('SELECT 1', (err: Error, data: any) => {
         if (err) return reject(new MysqlConnectionError(err.message));
         resolve(pool);
