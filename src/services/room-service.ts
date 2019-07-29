@@ -150,7 +150,7 @@ injectable(ServiceModules.Room.CreateRoulette,
       await addMember({
         room_no: roomNo,
         member_no: param.attendee_no,
-        is_owner: true
+        is_owner: false
       });
 
       history({
