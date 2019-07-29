@@ -3,14 +3,17 @@ import { RouletteMatcherModules } from './modules';
 import { MysqlModules, MysqlTypes } from '../mysql';
 import { RouletteMatcherTypes } from './types';
 import { LoggerModules, LoggerTypes } from '../loggers';
+import { ServiceModules, ServiceTypes } from '../services';
 
 const tag = '[roulette-matcher]';
 
 injectable(RouletteMatcherModules.Match,
   [ LoggerModules.Logger,
-    MysqlModules.Mysql ],
+    MysqlModules.Mysql,
+    ServiceModules.Room.CreateRoulette ],
   async (log: LoggerTypes.Logger,
-    mysql: MysqlTypes.MysqlDriver): Promise<RouletteMatcherTypes.Match> =>
+    mysql: MysqlTypes.MysqlDriver,
+    createRouletteRoom: ServiceTypes.RoomService.CreateRoulette): Promise<RouletteMatcherTypes.Match> =>
 
     async () => {
       await mysql.transaction(async (con) => {
@@ -41,11 +44,20 @@ injectable(RouletteMatcherModules.Match,
         log.debug(`${tag} two reqeust matched. request_ids=`);
         console.log(requestIds);
 
+        const createRes = await createRouletteRoom({
+          owner_no: one.member_no,
+          owner_token: one.member_token,
+          attendee_no: two.member_no,
+          attendee_token: two.member_token,
+          title: '-',
+          max_attendee: 2
+        });
+
         await deleteMy(requestIds);
         await updateMy({
           request_ids: requestIds,
-          room_no: 1,
-          room_token: 'test-token'
+          room_no: createRes.room_no,
+          room_token: createRes.room_token
         });
       });
     });

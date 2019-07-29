@@ -18,7 +18,6 @@ injectable(ModelModules.Room.List,
 
         const query = `
           SELECT
-            SQL_CALC_FOUND_ROWS
             r.*,
             rhm.member_no AS owner_no
           FROM
@@ -89,6 +88,9 @@ const prepareOptionalSearchQueries = (driver: MysqlTypes.MysqlDriver) =>
       res.params.push(opts.region);
       clauseBlocks.push('m.region=?');
     }
+    clauseBlocks.push('room_type=?');
+    res.params.push('PUBLIC');
+
     const where = clauseBlocks.length > 0 ? ' WHERE ' : '';
     res.whereClause = `${where} ${clauseBlocks.join(' AND ')}`;
     return res;
