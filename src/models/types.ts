@@ -12,6 +12,7 @@ export namespace ModelTypes {
     title: string;
     num_attendee: number;
     max_attendee: number;
+    roulette_opponent_no: number | null;
     reg_date: Date
   };
   export type RoomSimpleEntity = {

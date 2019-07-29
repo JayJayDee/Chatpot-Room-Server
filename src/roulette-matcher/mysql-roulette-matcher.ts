@@ -37,6 +37,12 @@ injectable(RouletteMatcherModules.Match,
           return;
         }
 
+        if (two.region_type === RegionType.FOREIGNER &&
+              one.member_region === two.member_region) {
+          log.debug(`${tag} not matched.`);
+          return;
+        }
+
         const requestIds = [
           one.request_id,
           two.request_id
