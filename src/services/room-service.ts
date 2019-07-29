@@ -170,7 +170,8 @@ injectable(ServiceModules.Room.CreateRoulette,
       await enterDevTokensProcess(param.attendee_token, roomToken);
 
       return {
-        room_token: roomToken
+        room_token: roomToken,
+        room_no: roomNo
       };
     });
 

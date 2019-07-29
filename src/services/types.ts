@@ -102,6 +102,7 @@ export namespace ServiceTypes {
 
   type ChatRouletteRes = {
     room_token: string;
+    room_no: number;
   };
 
   export namespace RoomService {
