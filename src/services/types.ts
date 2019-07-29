@@ -52,6 +52,7 @@ export namespace ServiceTypes {
   };
   export interface MyRoom extends Room {
     last_message: Message;
+    roulette_opponent: Member | null;
   }
   export type RoomList = {
     all: number;

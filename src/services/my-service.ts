@@ -32,7 +32,18 @@ injectable(ServiceModules.My.Rooms,
       async (memberNo: number) => {
         const convert = convertMember(token);
         const myRooms = await queryMyRooms(memberNo);
-        const owners = await requestMembers(myRooms.map((r) => r.owner_no));
+
+        const memberNos = myRooms.map((r) => r.owner_no);
+
+        myRooms.forEach((mr) => {
+          if (mr.room_type === ModelTypes.RoomType.ROULETTE) {
+            if (mr.roulette_opponent_no) {
+              memberNos.push(mr.roulette_opponent_no);
+            }
+          }
+        });
+
+        const members = await requestMembers(memberNos);
 
         const tokens: string[] = myRooms.map((r) => r.token);
         const lastMsgs = await getLastMsgs(tokens);
@@ -40,12 +51,16 @@ injectable(ServiceModules.My.Rooms,
         const resp: ServiceTypes.MyRoom[] = myRooms.map((r) => ({
           room_token: r.token,
           room_type: r.room_type,
-          owner: convert(find(owners, {member_no: r.owner_no})),
+          owner: convert(find(members, {member_no: r.owner_no})),
           title: r.title,
           num_attendee: r.num_attendee,
           max_attendee: r.max_attendee,
           reg_date: r.reg_date,
-          last_message: lastMsgs[r.token]
+          last_message: lastMsgs[r.token],
+          roulette_opponent:
+            r.room_type === ModelTypes.RoomType.ROULETTE ?
+              convert(find(members, {member_no: r.roulette_opponent_no})) :
+              null
         }));
         return resp;
       });

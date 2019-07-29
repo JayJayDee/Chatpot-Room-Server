@@ -14,7 +14,8 @@ injectable(ModelModules.Converter.Room,
       owner_no: r.owner_no,
       num_attendee: r.num_attendee,
       max_attendee: r.max_attendee,
-      reg_date: r.reg_date
+      reg_date: r.reg_date,
+      roulette_opponent_no: r.roulette_opponent_no
     }));
 
 class InvalidRoomTypeError extends BaseLogicError {

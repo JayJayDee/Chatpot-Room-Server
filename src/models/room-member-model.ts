@@ -14,7 +14,8 @@ injectable(ModelModules.RoomMember.MyRooms,
         const sql = `
           SELECT
             r.*,
-            rhmo.member_no AS owner_no
+            rhmo.member_no AS owner_no,
+            roulettem.member_no AS roulette_opponent_no
           FROM
             chatpot_room_has_member AS rhm
           INNER JOIN
@@ -22,10 +23,14 @@ injectable(ModelModules.RoomMember.MyRooms,
           INNER JOIN
             chatpot_room_has_member AS rhmo ON
               rhmo.room_no=rhm.room_no AND rhmo.is_owner=1
+          LEFT OUTER JOIN
+            chatpot_room_has_member AS roulettem ON
+              roulettem.room_no=r.no AND
+              r.room_type='ROULETTE' AND roulettem.member_no != ?
           WHERE
             rhm.member_no=?
         `;
-        const rows: any[] = await mysql.query(sql, [ memberNo ]) as any[];
+        const rows: any[] = await mysql.query(sql, [ memberNo, memberNo ]) as any[];
         const rooms: ModelTypes.RoomEntity[] = rows.map(cvtRoom);
         return rooms;
       });
@@ -42,7 +47,7 @@ injectable(ModelModules.RoomMember.AddMember,
         };
         const isOwner: number = param.is_owner === true ? 1 : 0;
         const sql = `
-          INSERT INTO chatpot_room_has_member
+          INSERT INTO 22chatpot_room_has_member
             (room_no, member_no, is_owner, join_date)
           SELECT
             ?, ?, ?, NOW()
