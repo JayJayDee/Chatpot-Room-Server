@@ -47,7 +47,7 @@ injectable(ModelModules.RoomMember.AddMember,
         };
         const isOwner: number = param.is_owner === true ? 1 : 0;
         const sql = `
-          INSERT INTO 22chatpot_room_has_member
+          INSERT INTO chatpot_room_has_member
             (room_no, member_no, is_owner, join_date)
           SELECT
             ?, ?, ?, NOW()
