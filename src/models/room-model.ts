@@ -103,17 +103,12 @@ injectable(ModelModules.Room.Get,
       const sql = `
         SELECT
           r.*,
-          rhm.member_no AS owner_no,
-          roulettem.member_no AS roulette_opponent_no
+          rhm.member_no AS owner_no
         FROM
           chatpot_room AS r
         INNER JOIN
           chatpot_room_has_member AS rhm
             ON rhm.room_no=r.no AND rhm.is_owner=1
-        LEFT OUTER JOIN
-          chatpot_room_has_member AS roulettem ON
-            roulettem.room_no=r.no AND
-            r.room_type='ROULETTE' AND roulettem.member_no != ?
         WHERE
           r.no=?
       `;
@@ -127,7 +122,7 @@ injectable(ModelModules.Room.Get,
         title: rows[0].title,
         num_attendee: rows[0].num_attendee,
         max_attendee: rows[0].max_attendee,
-        roulette_opponent_no: rows[0].roulette_opponent_no,
+        roulette_opponent_no: null,
         reg_date: rows[0].reg_date
       };
       return room;
