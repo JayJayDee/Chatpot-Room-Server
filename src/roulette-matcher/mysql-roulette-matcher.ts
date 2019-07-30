@@ -165,3 +165,18 @@ const updateCheckers = (con: MysqlTypes.MysqlTransaction) =>
     `;
     await con.query(sql, params) as any;
   };
+
+
+injectable(RouletteMatcherModules.CleanupCheckers,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<RouletteMatcherTypes.CleanupCheckers> =>
+
+    async (roomNo) => {
+      const sql = `
+        DELETE FROM
+          chatpot_roulette_check
+        WHERE
+          room_no=?
+      `;
+      await mysql.query(sql, [ roomNo ]);
+    });

@@ -178,13 +178,16 @@ injectable(ModelModules.RoomMember.RemoveMember,
         const numAteendeeSql = `
           SELECT
             num_attendee,
+            room_type,
             title
           FROM
             chatpot_room
           WHERE no=?
         `;
         const rows: any[] = await executor.query(numAteendeeSql, [ roomNo ]) as any[];
-        if (rows[0].num_attendee === 0) {
+
+        if (rows[0].num_attendee === 0 ||
+            rows[0].num_attendee <= 1 && rows[0].room_type === 'ROULETTE') {
           ret.destroyRequired = true;
         }
 
