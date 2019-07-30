@@ -199,9 +199,7 @@ injectable(ModelModules.Room.Destroy,
         DELETE FROM
           chatpot_room
         WHERE
-          no=? AND
-          num_attendee = 0
+          no=?
       `;
       await mysql.query(sql, [ roomNo ]);
-      // TODO: think about cas of not-deleted room.
     });
