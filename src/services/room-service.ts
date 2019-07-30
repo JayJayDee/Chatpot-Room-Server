@@ -8,6 +8,7 @@ import { ModelModules, ModelTypes } from '../models';
 import { UtilModules, UtilTypes } from '../utils';
 import { LoggerModules, LoggerTypes } from '../loggers';
 import { RoomJoinError, RoomLeaveError } from './errors';
+import { RouletteMatcherModules, RouletteMatcherTypes } from '../roulette-matcher';
 
 const cvtMember = () =>
   (fromMember: ExtApiTypes.Member): ServiceTypes.Member => {
@@ -231,14 +232,16 @@ injectable(ServiceModules.Room.Leave,
     ModelModules.History.Write,
     ExtApiModules.MessageReq.LeaveRoom,
     ExtApiModules.MessageReq.PublishNotification,
-    ExtApiModules.AuthReq.MembersByNos ],
+    ExtApiModules.AuthReq.MembersByNos,
+    RouletteMatcherModules.CleanupCheckers ],
   async (log: LoggerTypes.Logger,
     removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
     destroyRoom: ModelTypes.Room.Destroy,
     history: ModelTypes.History.Write,
     leaveDevTokensProcess: ExtApiTypes.MessageReq.LeaveRoom,
     publishNotification: ExtApiTypes.MessageReq.PublishNotification,
-    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<ServiceTypes.RoomService.Leave> =>
+    getMembersByNos: ExtApiTypes.AuthReq.MembersByNos,
+    cleanupMatchCheckers: RouletteMatcherTypes.CleanupCheckers): Promise<ServiceTypes.RoomService.Leave> =>
 
     async (param) => {
       const resp = await removeMemberFromRoom(param.member_no, param.room_no);
@@ -273,6 +276,7 @@ injectable(ServiceModules.Room.Leave,
           room_no: param.room_no,
         });
         await destroyRoom(param.room_no);
+        await cleanupMatchCheckers(param.room_no);
       }
 
       // normal leave.
