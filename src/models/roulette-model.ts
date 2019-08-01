@@ -6,6 +6,34 @@ import { ModelTypes } from './types';
 import { MysqlModules, MysqlTypes } from '../mysql';
 import { BaseLogicError } from '../errors';
 
+injectable(ModelModules.Roulette.Cancel,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Roulette.Cancel> =>
+
+    async (param) => {
+      await mysql.transaction(async (con) => {
+        const requestSql = `
+          DELETE FROM
+            chatpot_roulette_request
+          WHERE
+            request_id=?
+        `;
+        const resp = await mysql.query(requestSql, [ param.request_id ]);
+        console.log(resp);
+
+        const checkerSql = `
+          DELETE FROM
+            chatpot_roulette_check
+          WHERE
+            request_id=? AND
+            match_status='WAITING'
+        `;
+        const checkerResp = await mysql.query(checkerSql, [ param.request_id ]);
+        console.log(checkerResp);
+      });
+    });
+
+
 class MaxRouletteExceedError extends BaseLogicError {
   constructor() {
     super('MAX_ROULETTE_EXCEED', 'number of max roulette exceeded');
