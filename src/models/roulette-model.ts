@@ -6,6 +6,49 @@ import { ModelTypes } from './types';
 import { MysqlModules, MysqlTypes } from '../mysql';
 import { BaseLogicError } from '../errors';
 
+class RequestNotFoundError extends BaseLogicError {
+  constructor(msg: string) {
+    super('REQUEST_NOT_FOUND', msg);
+  }
+}
+class InvalidRouletteStatusError extends BaseLogicError {
+  constructor(msg: string) {
+    super('INVALID_ROULETTE_STATUS', msg);
+  }
+}
+
+injectable(ModelModules.Roulette.Cancel,
+  [ MysqlModules.Mysql ],
+  async (mysql: MysqlTypes.MysqlDriver): Promise<ModelTypes.Roulette.Cancel> =>
+
+    async (param) => {
+      await mysql.transaction(async (con) => {
+        const requestSql = `
+          DELETE FROM
+            chatpot_roulette_request
+          WHERE
+            request_id=?
+        `;
+        const resp = await mysql.query(requestSql, [ param.request_id ]) as any;
+        if (resp.affectedRows !== 1) {
+          throw new RequestNotFoundError(`request not found with request_id: ${param.request_id}`);
+        }
+
+        const checkerSql = `
+          DELETE FROM
+            chatpot_roulette_check
+          WHERE
+            request_id=? AND
+            match_status='WAITING'
+        `;
+        const checkerResp = await mysql.query(checkerSql, [ param.request_id ]) as any;
+        if (checkerResp.affectedRows !== 1) {
+          throw new InvalidRouletteStatusError(`already matched request or request not found`);
+        }
+      });
+    });
+
+
 class MaxRouletteExceedError extends BaseLogicError {
   constructor() {
     super('MAX_ROULETTE_EXCEED', 'number of max roulette exceeded');

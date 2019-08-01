@@ -17,11 +17,11 @@ injectable(EndpointModules.Roulette.Request,
     membersByNos: ExtApiTypes.AuthReq.MembersByNos): Promise<EndpointTypes.Endpoint> =>
 
   ({
-    uri: '/roulette',
+    uri: '/roulette/:member_token/request',
     method: EndpointTypes.EndpointMethod.POST,
     handler: [
       wrapAsync(async (req, res, next) => {
-        const memberToken = req.body['member_token'];
+        const memberToken = req.params['member_token'];
         if (!memberToken) throw new InvalidParamError('member_token required');
 
         const regionType = parseRegionType(req.body['region_type']);
@@ -66,7 +66,7 @@ injectable(EndpointModules.Roulette.Status,
     fetchStatuses: ModelTypes.Roulette.FetchStatuses): Promise<EndpointTypes.Endpoint> =>
 
   ({
-    uri: '/roulette/:member_token/status',
+    uri: '/roulette/:member_token/requests',
     method: EndpointTypes.EndpointMethod.GET,
     handler: [
       wrapAsync(async (req, res, next) => {
@@ -85,16 +85,19 @@ injectable(EndpointModules.Roulette.Status,
 
 injectable(EndpointModules.Roulette.Cancel,
   [ EndpointModules.Utils.WrapAync,
-    UtilModules.Auth.DecryptMemberToken ],
+    UtilModules.Auth.DecryptMemberToken,
+    ModelModules.Roulette.Cancel ],
   async (wrapAsync: EndpointTypes.Utils.WrapAsync,
-    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken): Promise<EndpointTypes.Endpoint> =>
+    decryptMemberToken: UtilTypes.Auth.DecryptMemberToken,
+    cancel: ModelTypes.Roulette.Cancel): Promise<EndpointTypes.Endpoint> =>
 
     ({
-      uri: '/roulette/:request_id/cancel',
-      method: EndpointTypes.EndpointMethod.POST,
+      uri: '/roulette/:member_token/request/:request_id',
+      method: EndpointTypes.EndpointMethod.DELETE,
       handler: [
         wrapAsync(async (req, res, next) => {
-          // TODO: roulette request deletion.
+          const requestId = req.params['request_id'];
+          await cancel({ request_id: requestId });
           res.status(200).json({});
         })
       ]

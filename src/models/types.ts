@@ -127,6 +127,11 @@ export namespace ModelTypes {
     };
     export type Request = (param: RequestParam) => Promise<RequestRes>;
 
+    type CancelParam = {
+      request_id: string;
+    };
+    export type Cancel = (param: CancelParam) => Promise<void>;
+
     type StatusParam = {
       member_no: number;
     };

@@ -24,6 +24,7 @@ export namespace ModelModules {
   }
 
   export enum Roulette {
+    Cancel = 'Model/Roulette/Cancel',
     Request = 'Model/Roulette/Request',
     FetchStatuses = 'Model/Rouletee/Status'
   }
