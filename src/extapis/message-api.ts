@@ -94,3 +94,26 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
         body
       });
     });
+
+
+ injectable(ExtApiModules.MessageReq.PublishRouletteMatched,
+  [ ExtApiModules.Requestor,
+    ConfigModules.ExternalApiConfig,
+    LoggerModules.Logger ],
+  async (request: ExtApiTypes.Request,
+    extApiCfg: ConfigTypes.ExternalApiConfig,
+    log: LoggerTypes.Logger): Promise<ExtApiTypes.MessageReq.PublishRouletteMatched> =>
+
+    async (param) => {
+      const baseUri = `${extApiCfg.messageBaseUri}/internal/roulette/matched`;
+      const qsBody = param.member_nos.map((m) => `member_nos=${m}`).join('&');
+      const uri = `${baseUri}?${qsBody}`;
+
+      await request({
+        uri,
+        method: ExtApiTypes.RequestMethod.POST,
+        body: {
+          room_token: param.room_token
+        }
+      });
+    });
