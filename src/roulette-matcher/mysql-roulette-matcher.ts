@@ -4,16 +4,19 @@ import { MysqlModules, MysqlTypes } from '../mysql';
 import { RouletteMatcherTypes } from './types';
 import { LoggerModules, LoggerTypes } from '../loggers';
 import { ServiceModules, ServiceTypes } from '../services';
+import { ExtApiModules } from '../extapis';
 
 const tag = '[roulette-matcher]';
 
 injectable(RouletteMatcherModules.Match,
   [ LoggerModules.Logger,
     MysqlModules.Mysql,
-    ServiceModules.Room.CreateRoulette ],
+    ServiceModules.Room.CreateRoulette,
+    ExtApiModules.MessageReq.PublishRouletteMatched ],
   async (log: LoggerTypes.Logger,
     mysql: MysqlTypes.MysqlDriver,
-    createRouletteRoom: ServiceTypes.RoomService.CreateRoulette): Promise<RouletteMatcherTypes.Match> =>
+    createRouletteRoom: ServiceTypes.RoomService.CreateRoulette,
+    publishRouletteMatched): Promise<RouletteMatcherTypes.Match> =>
 
     async () => {
       await mysql.transaction(async (con) => {
@@ -64,6 +67,11 @@ injectable(RouletteMatcherModules.Match,
           request_ids: requestIds,
           room_no: createRes.room_no,
           room_token: createRes.room_token
+        });
+
+        publishRouletteMatched({
+          room_token: createRes.room_token,
+          member_nos: [ one.member_no, two.member_no ]
         });
       });
     });

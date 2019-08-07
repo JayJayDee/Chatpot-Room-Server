@@ -67,9 +67,15 @@ export namespace ExtApiTypes {
   };
 
   export namespace MessageReq {
+    type PublishRouletteMatchParam = {
+      room_token: string;
+      member_nos: number[];
+    };
+
     export type EnterRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LeaveRoom = (memberToken: string, roomToken: string) => Promise<void>;
     export type LastMessages = (roomTokens: string[]) => Promise<LastMessageRes>;
     export type PublishNotification = (roomToken: string, notification: NotificationMessage) => Promise<void>;
+    export type PublishRouletteMatched = (param: PublishRouletteMatchParam) => Promise<void>;
   }
 }

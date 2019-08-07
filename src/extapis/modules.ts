@@ -8,6 +8,7 @@ export namespace ExtApiModules {
     EnterRoom = 'ExtApi/Message/EnterRoom',
     LeaveRoom = 'ExtApi/Message/LeaveRoom',
     LastMessages = 'ExtApi/Message/LastMessages',
-    PublishNotification = 'ExtApi/Message/PublishNotification'
+    PublishNotification = 'ExtApi/Message/PublishNotification',
+    PublishRouletteMatched = 'ExtApi/Message/PublishRouletteMatched'
   }
 }
