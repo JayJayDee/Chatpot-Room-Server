@@ -80,9 +80,10 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
 
       const body = {
         content: JSON.stringify(content),
+        member: JSON.stringify(notification.member),
         room_token: roomToken,
-        title_key: notification.action,
-        subtitle: notification.roomTitle
+        room_title: notification.roomTitle,
+        action: notification.action
       };
 
       log.debug(`[extapi-message] ${uri}, body-payload`);
