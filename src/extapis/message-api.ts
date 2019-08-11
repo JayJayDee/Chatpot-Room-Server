@@ -118,3 +118,26 @@ injectable(ExtApiModules.MessageReq.PublishNotification,
         }
       });
     });
+
+
+injectable(ExtApiModules.MessageReq.PublishRouletteDestroyed,
+  [ ExtApiModules.Requestor,
+    ConfigModules.ExternalApiConfig,
+    LoggerModules.Logger ],
+  async (request: ExtApiTypes.Request,
+    extApiCfg: ConfigTypes.ExternalApiConfig,
+    log: LoggerTypes.Logger): Promise<ExtApiTypes.MessageReq.PublishRouletteDestroyed> =>
+
+    async (param) => {
+      const baseUri = `${extApiCfg.messageBaseUri}/internal/roulette/destroyed`;
+      const qsBody = param.member_nos.map((m) => `member_nos=${m}`).join('&');
+      const uri = `${baseUri}?${qsBody}`;
+
+      await request({
+        uri,
+        method: ExtApiTypes.RequestMethod.POST,
+        body: {
+          room_token: param.room_token
+        }
+      });
+    });

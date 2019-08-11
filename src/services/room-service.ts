@@ -233,6 +233,7 @@ injectable(ServiceModules.Room.Leave,
     ExtApiModules.MessageReq.LeaveRoom,
     ExtApiModules.MessageReq.PublishNotification,
     ExtApiModules.AuthReq.MembersByNos,
+    ExtApiModules.MessageReq.PublishRouletteDestroyed,
     RouletteMatcherModules.CleanupCheckers ],
   async (log: LoggerTypes.Logger,
     removeMemberFromRoom: ModelTypes.RoomMember.RemoveMember,
@@ -241,6 +242,7 @@ injectable(ServiceModules.Room.Leave,
     leaveDevTokensProcess: ExtApiTypes.MessageReq.LeaveRoom,
     publishNotification: ExtApiTypes.MessageReq.PublishNotification,
     getMembersByNos: ExtApiTypes.AuthReq.MembersByNos,
+    publishRouletteDestroyed: ExtApiTypes.MessageReq.PublishRouletteDestroyed,
     cleanupMatchCheckers: RouletteMatcherTypes.CleanupCheckers): Promise<ServiceTypes.RoomService.Leave> =>
 
     async (param) => {
@@ -275,6 +277,11 @@ injectable(ServiceModules.Room.Leave,
           member_no: param.member_no,
           room_no: param.room_no,
         });
+
+        if (resp.roomType === ModelTypes.RoomType.ROULETTE) {
+          // TODO: destroy notification publish api call
+        }
+
         await destroyRoom(param.room_no);
         await cleanupMatchCheckers(param.room_no);
       }

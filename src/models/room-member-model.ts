@@ -141,6 +141,7 @@ injectable(ModelModules.RoomMember.RemoveMember,
         const ret: ModelTypes.RoomMemberRemoveRes = {
           success: false,
           roomTitle: null,
+          roomType: null,
           destroyRequired: false,
           newOwnerNo: null,
           cause: null
@@ -196,6 +197,7 @@ injectable(ModelModules.RoomMember.RemoveMember,
           ret.newOwnerNo = await elect(roomNo);
         }
 
+        ret.roomType = rows[0].room_type;
         ret.roomTitle = rows[0].title;
         ret.success = true;
         return ret;
