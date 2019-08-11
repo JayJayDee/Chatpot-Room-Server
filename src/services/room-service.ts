@@ -279,7 +279,10 @@ injectable(ServiceModules.Room.Leave,
         });
 
         if (resp.roomType === ModelTypes.RoomType.ROULETTE) {
-          // TODO: destroy notification publish api call
+          publishRouletteDestroyed({
+            room_token: param.room_token,
+            member_nos: resp.memberNos
+          });
         }
 
         await destroyRoom(param.room_no);
