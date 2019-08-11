@@ -174,6 +174,13 @@ injectable(EndpointModules.Room.Leave,
         ]
       }));
 
+
+class RoomNotFoundError extends BaseLogicError {
+  constructor(msg: string) {
+    super('ROOM_NOT_FOUND', msg);
+  }
+}
+
 injectable(EndpointModules.Room.Get,
   [ EndpointModules.Utils.WrapAync,
     UtilModules.Auth.DecryptRoomToken,
@@ -196,6 +203,9 @@ injectable(EndpointModules.Room.Get,
           if (!room) throw new InvalidParamError('invalid room_token');
 
           const roomDetail = await getRoomDetail(room.room_no);
+          if (roomDetail === null) {
+            throw new RoomNotFoundError(`room not found for room_token:${roomToken}`);
+          }
           res.status(200).json(roomDetail);
         })
       ]
