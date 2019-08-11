@@ -141,9 +141,11 @@ injectable(ModelModules.RoomMember.RemoveMember,
         const ret: ModelTypes.RoomMemberRemoveRes = {
           success: false,
           roomTitle: null,
+          roomType: null,
           destroyRequired: false,
           newOwnerNo: null,
-          cause: null
+          cause: null,
+          memberNos: []
         };
         const decreaseSql = `
           UPDATE
@@ -159,6 +161,17 @@ injectable(ModelModules.RoomMember.RemoveMember,
           ret.cause = 'ROOM_NOT_FOUND';
           return ret;
         }
+
+        const selectMemberSql = `
+          SELECT
+            member_no
+          FROM
+            chatpot_room_has_member
+          WHERE
+            room_no=?
+        `;
+        const memberRows: any[] = await executor.query(selectMemberSql, [ roomNo ]) as any[];
+        const memberNos: number[] = memberRows.map((r) => r.member_no);
 
         const removeSql = `
           DELETE FROM
@@ -196,6 +209,9 @@ injectable(ModelModules.RoomMember.RemoveMember,
           ret.newOwnerNo = await elect(roomNo);
         }
 
+        ret.memberNos = memberNos;
+
+        ret.roomType = rows[0].room_type;
         ret.roomTitle = rows[0].title;
         ret.success = true;
         return ret;
